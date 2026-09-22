@@ -33,7 +33,6 @@ public class UserService : IUserService
 
         user.DisplayName = dto.DisplayName;
         user.PhoneNumber = dto.PhoneNumber;
-        user.AvatarUrl = dto.AvatarUrl;
 
         // Xóa liên kết cũ
         if (user.SocialLinks.Any())
@@ -136,7 +135,6 @@ public class UserService : IUserService
 
         targetUser.DisplayName = dto.DisplayName;
         targetUser.PhoneNumber = dto.PhoneNumber;
-        targetUser.AvatarUrl = dto.AvatarUrl;
 
         if (targetUser.SocialLinks.Any())
         {
