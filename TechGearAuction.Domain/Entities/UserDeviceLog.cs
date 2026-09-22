@@ -6,7 +6,5 @@ public class UserDeviceLog : BaseEntity
     public string IpAddress { get; set; } = null!;
     public string DeviceHash { get; set; } = null!;
     
-    // Using BaseEntity.CreatedAt as LoginTime, or explicit:
-    public DateTime LoginTime { get; set; }
 }
 

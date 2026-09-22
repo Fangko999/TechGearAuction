@@ -78,3 +78,4 @@ public class UpdateDraftAuctionCommandHandler : IRequestHandler<UpdateDraftAucti
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

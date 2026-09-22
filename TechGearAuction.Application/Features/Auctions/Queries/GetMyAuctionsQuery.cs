@@ -74,3 +74,4 @@ public class GetMyAuctionsQueryHandler : IRequestHandler<GetMyAuctionsQuery, Pag
         };
     }
 }
+

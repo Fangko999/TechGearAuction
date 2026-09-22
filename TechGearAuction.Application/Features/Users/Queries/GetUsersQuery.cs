@@ -1,16 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TechGearAuction.Application.Common.Models;
 using TechGearAuction.Application.DTOs.User;
 using TechGearAuction.Application.Interfaces;
 
 namespace TechGearAuction.Application.Features.Users.Queries;
 
-public class GetUsersQuery : IRequest<List<UserProfileDto>>
+public class GetUsersQuery : IRequest<PagedResult<UserProfileDto>>
 {
-    // For simplicity, returning a list without pagination for now, but in reality should use pagination.
+    public int PageIndex { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 }
 
-public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, List<UserProfileDto>>
+public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PagedResult<UserProfileDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -19,15 +21,21 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, List<UserProf
         _context = context;
     }
 
-    public async Task<List<UserProfileDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<UserProfileDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var users = await _context.Users
+        var query = _context.Users
             .IgnoreQueryFilters()
             .Include(u => u.SocialLinks)
-            .OrderByDescending(u => u.CreatedAt)
+            .OrderByDescending(u => u.CreatedAt);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var users = await query
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return users.Select(user => new UserProfileDto
+        var dtos = users.Select(user => new UserProfileDto
         {
             Id = user.Id,
             Email = user.Email,
@@ -45,6 +53,13 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, List<UserProf
                 Url = link.Url
             }).ToList()
         }).ToList();
+
+        return new PagedResult<UserProfileDto>
+        {
+            Items = dtos,
+            TotalCount = totalCount,
+            PageIndex = request.PageIndex,
+            PageSize = request.PageSize
+        };
     }
 }
-

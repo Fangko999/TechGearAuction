@@ -62,3 +62,4 @@ public class CancelAuctionCommandHandler : IRequestHandler<CancelAuctionCommand>
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

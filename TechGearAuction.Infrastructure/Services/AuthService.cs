@@ -94,8 +94,7 @@ public class AuthService : IAuthService
         {
             UserId = user.Id,
             IpAddress = ipAddress,
-            DeviceHash = deviceHash,
-            LoginTime = DateTime.UtcNow
+            DeviceHash = deviceHash
         };
         _context.UserDeviceLogs.Add(deviceLog);
         

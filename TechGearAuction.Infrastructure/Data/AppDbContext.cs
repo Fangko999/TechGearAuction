@@ -110,6 +110,30 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<UserDeviceLog>()
             .HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<CreditTransaction>()
+            .HasOne(c => c.User).WithMany().HasForeignKey(c => c.UserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<CreditTransaction>()
+            .HasOne(c => c.Auction).WithMany().HasForeignKey(c => c.AuctionId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<SuspiciousActivity>()
+            .HasOne(s => s.Bidder).WithMany().HasForeignKey(s => s.BidderId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<SuspiciousActivity>()
+            .HasOne(s => s.Seller).WithMany().HasForeignKey(s => s.SellerId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<SuspiciousActivity>()
+            .HasOne(s => s.Auction).WithMany().HasForeignKey(s => s.AuctionId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AuctionWatch>()
+            .HasOne(w => w.User).WithMany().HasForeignKey(w => w.UserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AuctionWatch>()
+            .HasOne(w => w.Auction).WithMany().HasForeignKey(w => w.AuctionId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(m => m.Sender).WithMany().HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict);
+
         // 7. Global Query Filters (Tự động ẩn bản ghi bị xóa mềm)
         modelBuilder.Entity<User>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<UserSocialLink>().HasQueryFilter(e => e.DeletedAt == null);
