@@ -142,5 +142,60 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateDraftAuction(Guid id, [FromBody] UpdateDraftAuctionCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest(new { Message = "ID mismatch." });
+        }
+
+        try
+        {
+            await _mediator.Send(command);
+            return Ok(new { Message = "Auction updated successfully." });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}/cancel")]
+    public async Task<IActionResult> CancelAuction(Guid id)
+    {
+        try
+        {
+            await _mediator.Send(new CancelAuctionCommand { Id = id });
+            return Ok(new { Message = "Auction cancelled successfully." });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMyAuctions([FromQuery] GetMyAuctionsQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 
