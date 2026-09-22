@@ -58,6 +58,11 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TechG
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("MinioSettings"));
 builder.Services.AddScoped<IStorageService, MinioStorageService>();
+builder.Services.AddScoped<IAuctionNotificationService, AuctionNotificationService>();
+
+builder.Services.AddHostedService<AuctionClosingBackgroundService>();
+
+builder.Services.AddSignalR();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
@@ -91,6 +96,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<TechGearAuction.API.Hubs.AuctionHub>("/hubs/auction");
 
 using (var scope = app.Services.CreateScope())
 {

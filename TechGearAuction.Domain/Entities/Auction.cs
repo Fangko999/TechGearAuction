@@ -22,5 +22,6 @@ public class Auction : BaseEntity
     public User? Winner { get; set; }
     public Category Category { get; set; } = null!;
     public ICollection<AuctionImage> Images { get; set; } = new List<AuctionImage>();
+    public ICollection<Bid> Bids { get; set; } = new List<Bid>();
     public ChatRoom? ChatRoom { get; set; }
 }

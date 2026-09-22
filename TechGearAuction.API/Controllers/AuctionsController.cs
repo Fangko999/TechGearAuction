@@ -197,5 +197,42 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPost("{id}/bids")]
+    public async Task<IActionResult> PlaceBid(Guid id, [FromBody] TechGearAuction.Application.DTOs.Auction.PlaceBidDto dto)
+    {
+        try
+        {
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
+                ?? "Unknown";
+            
+            var deviceHash = Request.Headers["X-Device-Hash"].FirstOrDefault() 
+                ?? "Unknown";
+
+            var command = new PlaceBidCommand
+            {
+                AuctionId = id,
+                BidAmount = dto.BidAmount,
+                IpAddress = ipAddress,
+                DeviceHash = deviceHash
+            };
+
+            await _mediator.Send(command);
+            return Ok(new { Message = "Bid placed successfully." });
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+        {
+            return StatusCode(409, new { Message = "Another user placed a bid at the exact same time. Please refresh and try again." });
+        }
+        catch (Exception ex) when (ex.Message.Contains("exact same time"))
+        {
+            return StatusCode(409, new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 
