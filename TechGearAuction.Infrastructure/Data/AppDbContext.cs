@@ -126,8 +126,8 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<ReportEvidence>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<Appeal>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<AppealEvidence>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<AdminAuditLog>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<UserDeviceLog>().HasQueryFilter(e => e.DeletedAt == null);
+        modelBuilder.Entity<CreditTransaction>().HasQueryFilter(e => e.DeletedAt == null);
+        modelBuilder.Entity<SuspiciousActivity>().HasQueryFilter(e => e.DeletedAt == null);
     }
 
     // 8. Tự động hóa Audit Log & Soft Delete
