@@ -22,6 +22,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserPro
     public async Task<UserProfileDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         var user = await _context.Users
+            .IgnoreQueryFilters()
             .Include(u => u.SocialLinks)
             .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
 

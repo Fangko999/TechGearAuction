@@ -65,13 +65,31 @@ public class AdminUsersController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(Guid id)
+    [HttpPut("{id}/close")]
+    public async Task<IActionResult> CloseAccount(Guid id)
     {
         try
         {
-            await _mediator.Send(new DeleteUserCommand { TargetUserId = id });
-            return Ok(new { Message = "User deleted successfully." });
+            await _mediator.Send(new CloseUserAccountCommand { TargetUserId = id });
+            return Ok(new { Message = "User account closed successfully." });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}/restore")]
+    public async Task<IActionResult> RestoreAccount(Guid id)
+    {
+        try
+        {
+            await _mediator.Send(new RestoreUserAccountCommand { TargetUserId = id });
+            return Ok(new { Message = "User account restored successfully." });
         }
         catch (ArgumentException ex)
         {

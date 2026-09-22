@@ -5,28 +5,28 @@ using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Application.Features.Users.Commands;
 
-public class DeleteUserCommand : IRequest
+public class CloseUserAccountCommand : IRequest
 {
     public Guid TargetUserId { get; set; }
 }
 
-public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
+public class CloseUserAccountCommandHandler : IRequestHandler<CloseUserAccountCommand>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
-    public DeleteUserCommandHandler(IAppDbContext context, ICurrentUserService currentUserService)
+    public CloseUserAccountCommandHandler(IAppDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
         _currentUserService = currentUserService;
     }
 
-    public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CloseUserAccountCommand request, CancellationToken cancellationToken)
     {
         var adminId = _currentUserService.UserId;
         if (adminId == request.TargetUserId)
         {
-            throw new ArgumentException("Admin cannot delete their own account.");
+            throw new ArgumentException("Admin cannot close their own account.");
         }
 
         var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.TargetUserId, cancellationToken);
@@ -35,7 +35,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
             throw new Exception("User not found.");
         }
 
-        targetUser.Status = UserStatus.Banned;
+        targetUser.Status = UserStatus.Closed;
         targetUser.DeletedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

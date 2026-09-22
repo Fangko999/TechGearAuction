@@ -22,6 +22,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, List<UserProf
     public async Task<List<UserProfileDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
         var users = await _context.Users
+            .IgnoreQueryFilters()
             .Include(u => u.SocialLinks)
             .OrderByDescending(u => u.CreatedAt)
             .ToListAsync(cancellationToken);
