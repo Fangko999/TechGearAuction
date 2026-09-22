@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 1. Container cho Database (SQL Server)
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: techgear_sql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=TechGear@2026! # Mật khẩu sa của SQL Server
+    ports:
+      - "1433:1433" # Mở port để bạn có thể dùng SSMS/DataGrip ở máy thật kết nối vào
+    volumes:
+      - sql_data:/var/opt/mssql # Lưu trữ dữ liệu an toàn, không bị mất khi xóa container
+
+  # 2. Container cho Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techgear_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Ghi đè Connection String để trỏ tới container 'sqlserver' thay vì 'localhost'
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=TechGearAuctionDb;User Id=sa;Password=TechGear@2026!;TrustServerCertificate=True;MultipleActiveResultSets=true
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver # Đảm bảo SQL Server chạy lên trước rồi mới chạy API
+
+volumes:
+  sql_data:

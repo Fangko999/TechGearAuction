@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TechGearAuction.API/TechGearAuction.API.csproj" />
+  <Project Path="TechGearAuction.Application/TechGearAuction.Application.csproj" />
+  <Project Path="TechGearAuction.Domain/TechGearAuction.Domain.csproj" />
+  <Project Path="TechGearAuction.Infrastructure/TechGearAuction.Infrastructure.csproj" />
+</Solution>
