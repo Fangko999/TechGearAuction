@@ -41,3 +41,4 @@ public class GetMyCreditHistoryQueryHandler : IRequestHandler<GetMyCreditHistory
         return transactions;
     }
 }
+

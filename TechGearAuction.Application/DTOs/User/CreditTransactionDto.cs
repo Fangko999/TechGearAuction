@@ -9,3 +9,4 @@ public class CreditTransactionDto
     public Guid? AuctionId { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
