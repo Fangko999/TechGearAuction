@@ -10,3 +10,4 @@ public class ChangePasswordDto
     [Required, MinLength(6, ErrorMessage = "New password must be at least 6 characters long.")]
     public string NewPassword { get; set; } = null!;
 }
+
