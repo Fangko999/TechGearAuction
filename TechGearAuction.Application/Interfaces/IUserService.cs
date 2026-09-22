@@ -6,3 +6,4 @@ public interface IUserService
 {
     Task UpdateProfileAsync(int userId, UpdateProfileRequestDto dto);
 }
+

@@ -13,3 +13,4 @@ public class SocialLinkDto
     public string Platform { get; set; } = null!;
     public string Url { get; set; } = null!;
 }
+
