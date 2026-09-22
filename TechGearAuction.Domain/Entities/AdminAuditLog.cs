@@ -10,3 +10,4 @@ public class AdminAuditLog : BaseEntity
     public int EntityId { get; set; }
     public string? Details { get; set; }
 }
+
