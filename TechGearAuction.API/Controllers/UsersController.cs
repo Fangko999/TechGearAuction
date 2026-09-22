@@ -192,5 +192,34 @@ public class UsersController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPost("{id}/block")]
+    public async Task<IActionResult> ToggleBlock(Guid id)
+    {
+        try
+        {
+            var isBlocked = await _mediator.Send(new TechGearAuction.Application.Features.Users.Commands.ToggleUserBlockCommand { BlockedId = id });
+            var status = isBlocked ? "blocked" : "unblocked";
+            return Ok(new { Message = $"User {status} successfully.", IsBlocked = isBlocked });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("me/blocked")]
+    public async Task<IActionResult> GetBlockedUsers([FromQuery] TechGearAuction.Application.Features.Users.Queries.GetMyBlockedUsersQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 

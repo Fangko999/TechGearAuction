@@ -6,33 +6,33 @@ using TechGearAuction.Application.Interfaces;
 
 namespace TechGearAuction.Application.Features.Users.Queries;
 
-public class GetMyFollowingQuery : IRequest<PagedResult<PublicProfileDto>>
+public class GetMyBlockedUsersQuery : IRequest<PagedResult<PublicProfileDto>>
 {
     public int PageIndex { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }
 
-public class GetMyFollowingQueryHandler : IRequestHandler<GetMyFollowingQuery, PagedResult<PublicProfileDto>>
+public class GetMyBlockedUsersQueryHandler : IRequestHandler<GetMyBlockedUsersQuery, PagedResult<PublicProfileDto>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
-    public GetMyFollowingQueryHandler(IAppDbContext context, ICurrentUserService currentUserService)
+    public GetMyBlockedUsersQueryHandler(IAppDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
         _currentUserService = currentUserService;
     }
 
-    public async Task<PagedResult<PublicProfileDto>> Handle(GetMyFollowingQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<PublicProfileDto>> Handle(GetMyBlockedUsersQuery request, CancellationToken cancellationToken)
     {
-        var followerId = _currentUserService.UserId;
+        var blockerId = _currentUserService.UserId;
 
-        var query = _context.UserFollows
-            .Where(f => f.FollowerId == followerId)
-            .Include(f => f.Followee)
+        var query = _context.UserBlocks
+            .Where(b => b.BlockerId == blockerId)
+            .Include(b => b.Blocked)
                 .ThenInclude(u => u.SocialLinks)
-            .OrderByDescending(f => f.CreatedAt)
-            .Select(f => f.Followee);
+            .OrderByDescending(b => b.CreatedAt)
+            .Select(b => b.Blocked);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
@@ -69,4 +69,3 @@ public class GetMyFollowingQueryHandler : IRequestHandler<GetMyFollowingQuery, P
         };
     }
 }
-

@@ -71,3 +71,4 @@ public class GetMyWatchlistQueryHandler : IRequestHandler<GetMyWatchlistQuery, P
         };
     }
 }
+

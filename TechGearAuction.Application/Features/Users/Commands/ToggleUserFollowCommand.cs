@@ -60,3 +60,4 @@ public class ToggleUserFollowCommandHandler : IRequestHandler<ToggleUserFollowCo
         }
     }
 }
+
