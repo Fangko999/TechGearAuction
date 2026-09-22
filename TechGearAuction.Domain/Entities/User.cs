@@ -18,5 +18,15 @@ public class User : BaseEntity
     public string? PasswordResetToken { get; set; }
     public DateTime? PasswordResetTokenExpiry { get; set; }
 
+    // Rating / Reviews
+    public double AverageRating { get; set; } = 0;
+    public int TotalReviews { get; set; } = 0;
+
+    // Transactions & Reports
+    public int TotalAuctionsCreated { get; set; } = 0;
+    public int TotalAuctionsWon { get; set; } = 0;
+    public int ReportedAsSellerCount { get; set; } = 0;
+    public int ReportedAsBuyerCount { get; set; } = 0;
+
     public ICollection<UserSocialLink> SocialLinks { get; set; } = new List<UserSocialLink>();
 }

@@ -53,3 +53,4 @@ public class UnbanUserCommandHandler : IRequestHandler<UnbanUserCommand>
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

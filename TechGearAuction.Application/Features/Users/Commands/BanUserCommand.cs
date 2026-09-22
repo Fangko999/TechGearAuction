@@ -57,3 +57,4 @@ public class BanUserCommandHandler : IRequestHandler<BanUserCommand>
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

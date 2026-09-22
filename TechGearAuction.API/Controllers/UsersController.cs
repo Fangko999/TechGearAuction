@@ -102,5 +102,20 @@ public class UsersController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpGet("{id}/public-profile")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPublicProfile(Guid id)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetPublicProfileQuery { UserId = id });
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+    }
 }
 
