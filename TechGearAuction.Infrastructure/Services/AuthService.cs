@@ -115,7 +115,7 @@ public class AuthService : IAuthService
         
         await _context.SaveChangesAsync();
 
-        var resetLink = $"http://localhost:5041/api/auth/reset-password?token={user.PasswordResetToken}";
+        var resetLink = $"http://localhost:8888/api/auth/reset-password?token={user.PasswordResetToken}";
         await _emailService.SendEmailAsync(user.Email, "Reset Password", $"Your reset token is: {user.PasswordResetToken}\nOr click: {resetLink}");
     }
 
