@@ -34,7 +34,14 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var result = await _authService.LoginAsync(dto);
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
+                ?? "Unknown";
+            
+            var deviceHash = Request.Headers["X-Device-Hash"].FirstOrDefault() 
+                ?? "Unknown";
+
+            var result = await _authService.LoginAsync(dto, ipAddress, deviceHash);
             return Ok(result);
         }
         catch (Exception ex)

@@ -60,7 +60,7 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+    public async Task<AuthResponseDto> LoginAsync(LoginDto dto, string ipAddress, string deviceHash)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
@@ -77,6 +77,11 @@ public class AuthService : IAuthService
         {
             throw new Exception("User account is not active.");
         }
+
+        // Lưu vết IP & Device
+        user.LastLoginIp = ipAddress;
+        user.LastLoginDeviceHash = deviceHash;
+        await _context.SaveChangesAsync();
 
         var token = _jwtProvider.GenerateToken(user);
 

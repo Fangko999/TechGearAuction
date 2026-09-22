@@ -44,6 +44,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Configure Dependency Injection
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, MockEmailService>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
