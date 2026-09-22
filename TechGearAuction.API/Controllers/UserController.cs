@@ -118,5 +118,29 @@ public class UserController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPut("{id}/profile")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateProfileByAdmin(int id, [FromBody] UpdateProfileRequestDto dto)
+    {
+        var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
+                          ?? User.FindFirst("sub")?.Value 
+                          ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+        
+        if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int adminId))
+        {
+            return Unauthorized(new { Message = "Invalid token." });
+        }
+
+        try
+        {
+            await _userService.UpdateUserProfileByAdminAsync(adminId, id, dto);
+            return Ok(new { Message = "User profile updated successfully by Admin." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 

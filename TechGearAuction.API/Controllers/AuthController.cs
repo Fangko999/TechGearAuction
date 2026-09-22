@@ -54,9 +54,35 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> VerifyEmail([FromQuery] string email)
     {
         var result = await _authService.VerifyEmailAsync(email);
-        if (result)
-            return Ok(new { Message = "Email verified successfully." });
-        
-        return BadRequest(new { Message = "Email verification failed." });
+        if (!result) return BadRequest(new { Message = "Email verification failed" });
+        return Ok(new { Message = "Email verified successfully" });
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+    {
+        try
+        {
+            await _authService.ForgotPasswordAsync(dto);
+            return Ok(new { Message = "If the email is registered, a password reset link has been sent." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+    {
+        try
+        {
+            await _authService.ResetPasswordAsync(dto);
+            return Ok(new { Message = "Password has been reset successfully." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 }

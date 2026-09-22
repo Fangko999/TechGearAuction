@@ -8,5 +8,6 @@ public interface IUserService
     Task UpdateProfileAsync(int userId, UpdateProfileRequestDto dto);
     Task ChangePasswordAsync(int userId, ChangePasswordDto dto);
     Task DeleteUserAsync(int adminId, int targetUserId);
+    Task UpdateUserProfileByAdminAsync(int adminId, int targetUserId, UpdateProfileRequestDto dto);
 }
 

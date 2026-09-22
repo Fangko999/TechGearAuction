@@ -120,5 +120,47 @@ public class UserService : IUserService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateUserProfileByAdminAsync(int adminId, int targetUserId, UpdateProfileRequestDto dto)
+    {
+        var targetUser = await _context.Users.Include(u => u.SocialLinks).FirstOrDefaultAsync(u => u.Id == targetUserId);
+        if (targetUser == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        targetUser.DisplayName = dto.DisplayName;
+        targetUser.PhoneNumber = dto.PhoneNumber;
+        targetUser.AvatarUrl = dto.AvatarUrl;
+
+        if (targetUser.SocialLinks.Any())
+        {
+            _context.UserSocialLinks.RemoveRange(targetUser.SocialLinks);
+        }
+
+        if (dto.SocialLinks != null && dto.SocialLinks.Any())
+        {
+            var newLinks = dto.SocialLinks.Select(link => new UserSocialLink
+            {
+                UserId = targetUserId,
+                Platform = link.Platform,
+                Url = link.Url
+            }).ToList();
+            _context.UserSocialLinks.AddRange(newLinks);
+        }
+
+        // Add audit log
+        var auditLog = new AdminAuditLog
+        {
+            AdminId = adminId,
+            Action = "Update Profile",
+            EntityType = "User",
+            EntityId = targetUserId,
+            Details = $"Admin updated profile of user {targetUserId}"
+        };
+        _context.AdminAuditLogs.Add(auditLog);
+
+        await _context.SaveChangesAsync();
+    }
 }
 

@@ -1,4 +1,4 @@
-﻿using TechGearAuction.Domain.Enums;
+using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Domain.Entities;
 
@@ -15,6 +15,8 @@ public class User : BaseEntity
     public UserStatus Status { get; set; } = UserStatus.Active;
     public string? LastLoginIp { get; set; }
     public string? LastLoginDeviceHash { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiry { get; set; }
 
     public ICollection<UserSocialLink> SocialLinks { get; set; } = new List<UserSocialLink>();
 }

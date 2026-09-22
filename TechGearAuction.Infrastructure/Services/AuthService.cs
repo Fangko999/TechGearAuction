@@ -98,11 +98,40 @@ public class AuthService : IAuthService
     public async Task<bool> VerifyEmailAsync(string email)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null)
-            return false;
+        if (user == null) return false;
 
         user.IsEmailVerified = true;
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task ForgotPasswordAsync(ForgotPasswordDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (user == null) return; // Không quăng lỗi để tránh dò tìm email
+
+        user.PasswordResetToken = Guid.NewGuid().ToString();
+        user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(15);
+        
+        await _context.SaveChangesAsync();
+
+        var resetLink = $"http://localhost:5041/api/auth/reset-password?token={user.PasswordResetToken}";
+        await _emailService.SendEmailAsync(user.Email, "Reset Password", $"Your reset token is: {user.PasswordResetToken}\nOr click: {resetLink}");
+    }
+
+    public async Task ResetPasswordAsync(ResetPasswordDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == dto.Token);
+        
+        if (user == null || user.PasswordResetTokenExpiry < DateTime.UtcNow)
+        {
+            throw new Exception("Invalid or expired reset token.");
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpiry = null;
+
+        await _context.SaveChangesAsync();
     }
 }

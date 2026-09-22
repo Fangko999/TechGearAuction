@@ -23,6 +23,7 @@ public interface IAppDbContext
     DbSet<ReportEvidence> ReportEvidences { get; set; }
     DbSet<Appeal> Appeals { get; set; }
     DbSet<AppealEvidence> AppealEvidences { get; set; }
+    DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
