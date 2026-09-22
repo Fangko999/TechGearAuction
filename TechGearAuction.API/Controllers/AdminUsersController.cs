@@ -100,6 +100,52 @@ public class AdminUsersController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPut("{id}/ban")]
+    public async Task<IActionResult> BanUser(Guid id, [FromBody] BanUserCommand command)
+    {
+        if (id != command.TargetUserId)
+        {
+            return BadRequest(new { Message = "ID mismatch." });
+        }
+
+        try
+        {
+            await _mediator.Send(command);
+            return Ok(new { Message = "User banned successfully." });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}/unban")]
+    public async Task<IActionResult> UnbanUser(Guid id, [FromBody] UnbanUserCommand command)
+    {
+        if (id != command.TargetUserId)
+        {
+            return BadRequest(new { Message = "ID mismatch." });
+        }
+
+        try
+        {
+            await _mediator.Send(command);
+            return Ok(new { Message = "User unbanned successfully." });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 
 

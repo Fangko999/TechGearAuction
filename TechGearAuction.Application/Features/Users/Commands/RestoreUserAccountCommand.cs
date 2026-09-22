@@ -43,3 +43,4 @@ public class RestoreUserAccountCommandHandler : IRequestHandler<RestoreUserAccou
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+
