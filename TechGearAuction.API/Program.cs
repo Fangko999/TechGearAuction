@@ -7,6 +7,7 @@ using TechGearAuction.Application.Common.Models;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Infrastructure.Data;
 using TechGearAuction.Infrastructure.Services;
+using TechGearAuction.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,11 +43,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     b => b.MigrationsAssembly("TechGearAuction.Infrastructure")));
 
 // Configure Dependency Injection
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, MockEmailService>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+// Configure MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TechGearAuction.Application.Features.Users.Commands.UpdateMyProfileCommand).Assembly));
 
 // Configure JWT Settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
