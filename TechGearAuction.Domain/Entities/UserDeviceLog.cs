@@ -9,3 +9,4 @@ public class UserDeviceLog : BaseEntity
     // Using BaseEntity.CreatedAt as LoginTime, or explicit:
     public DateTime LoginTime { get; set; }
 }
+

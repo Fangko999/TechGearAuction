@@ -117,5 +117,37 @@ public class UsersController : ControllerBase
             return NotFound(new { Message = ex.Message });
         }
     }
+
+    [HttpPost("me/credits/deposit")]
+    public async Task<IActionResult> DepositCredit([FromBody] DepositCreditCommand command)
+    {
+        try
+        {
+            await _mediator.Send(command);
+            return Ok(new { Message = "Credit deposited successfully." });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("me/credits/history")]
+    public async Task<IActionResult> GetCreditHistory()
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetMyCreditHistoryQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 
