@@ -41,3 +41,4 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

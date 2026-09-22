@@ -44,3 +44,4 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

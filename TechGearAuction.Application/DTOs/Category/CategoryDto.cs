@@ -10,3 +10,4 @@ public class CategoryDto
     // For nested tree structure
     public List<CategoryDto> SubCategories { get; set; } = new List<CategoryDto>();
 }
+

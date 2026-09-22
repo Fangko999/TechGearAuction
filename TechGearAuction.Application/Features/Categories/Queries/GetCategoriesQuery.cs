@@ -53,3 +53,4 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Lis
         }
     }
 }
+

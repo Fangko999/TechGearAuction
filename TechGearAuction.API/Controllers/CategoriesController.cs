@@ -46,3 +46,4 @@ public class CategoriesController : ControllerBase
         }
     }
 }
+

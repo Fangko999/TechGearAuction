@@ -35,3 +35,4 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         return category.Id;
     }
 }
+
