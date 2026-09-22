@@ -113,3 +113,4 @@ public class GetAuctionsQueryHandler : IRequestHandler<GetAuctionsQuery, PagedRe
         };
     }
 }
+

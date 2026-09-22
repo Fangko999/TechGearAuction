@@ -66,3 +66,4 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, A
         };
     }
 }
+

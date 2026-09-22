@@ -36,3 +36,4 @@ public class AuctionDetailDto : AuctionDto
 
     public List<AuctionImageDto> Images { get; set; } = new List<AuctionImageDto>();
 }
+

@@ -149,5 +149,48 @@ public class UsersController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpGet("me/watchlist")]
+    public async Task<IActionResult> GetWatchlist([FromQuery] TechGearAuction.Application.Features.Auctions.Queries.GetMyWatchlistQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("{id}/follow")]
+    public async Task<IActionResult> ToggleFollow(Guid id)
+    {
+        try
+        {
+            var isFollowing = await _mediator.Send(new TechGearAuction.Application.Features.Users.Commands.ToggleUserFollowCommand { FolloweeId = id });
+            var status = isFollowing ? "followed" : "unfollowed";
+            return Ok(new { Message = $"User {status} successfully.", IsFollowing = isFollowing });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("me/following")]
+    public async Task<IActionResult> GetFollowing([FromQuery] TechGearAuction.Application.Features.Users.Queries.GetMyFollowingQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 

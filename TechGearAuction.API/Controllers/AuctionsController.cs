@@ -127,5 +127,20 @@ public class AuctionsController : ControllerBase
             return NotFound(new { Message = ex.Message });
         }
     }
+
+    [HttpPost("{id}/watch")]
+    public async Task<IActionResult> ToggleWatch(Guid id)
+    {
+        try
+        {
+            var isWatched = await _mediator.Send(new ToggleAuctionWatchCommand { AuctionId = id });
+            var status = isWatched ? "added to" : "removed from";
+            return Ok(new { Message = $"Auction {status} watchlist successfully.", IsWatched = isWatched });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 
