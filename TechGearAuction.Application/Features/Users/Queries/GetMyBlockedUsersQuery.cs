@@ -69,3 +69,4 @@ public class GetMyBlockedUsersQueryHandler : IRequestHandler<GetMyBlockedUsersQu
         };
     }
 }
+

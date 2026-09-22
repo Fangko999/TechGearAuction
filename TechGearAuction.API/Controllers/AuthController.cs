@@ -20,8 +20,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var result = await _authService.RegisterAsync(dto);
-            return Ok(result);
+            await _authService.RegisterAsync(dto);
+            return Ok(new { Message = "Registration successful. Please check your email to verify your account." });
         }
         catch (Exception ex)
         {
@@ -51,11 +51,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("verify-email")]
-    public async Task<IActionResult> VerifyEmail([FromQuery] string email)
+    public async Task<IActionResult> VerifyEmail([FromQuery] string email, [FromQuery] string token)
     {
-        var result = await _authService.VerifyEmailAsync(email);
-        if (!result) return BadRequest(new { Message = "Email verification failed" });
-        return Ok(new { Message = "Email verified successfully" });
+        var result = await _authService.VerifyEmailAsync(email, token);
+        if (!result) return BadRequest(new { Message = "Email verification failed or token expired." });
+        return Ok(new { Message = "Email verified successfully. You can now login." });
     }
 
     [HttpPost("forgot-password")]

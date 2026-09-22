@@ -4,9 +4,9 @@ namespace TechGearAuction.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<AuthResponseDto> RegisterAsync(RegisterDto dto);
+    Task RegisterAsync(RegisterDto dto);
     Task<AuthResponseDto> LoginAsync(LoginDto dto, string ipAddress, string deviceHash);
-    Task<bool> VerifyEmailAsync(string email);
+    Task<bool> VerifyEmailAsync(string email, string token);
     Task ForgotPasswordAsync(ForgotPasswordDto dto);
     Task ResetPasswordAsync(ResetPasswordDto dto);
 }

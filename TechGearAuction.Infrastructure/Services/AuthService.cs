@@ -19,13 +19,15 @@ public class AuthService : IAuthService
         _emailService = emailService;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
+    public async Task RegisterAsync(RegisterDto dto)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (existingUser != null)
         {
             throw new Exception("Email already exists");
         }
+
+        var verificationToken = Guid.NewGuid().ToString();
 
         var user = new User
         {
@@ -34,34 +36,40 @@ public class AuthService : IAuthService
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = UserRole.User,
             Status = UserStatus.Active,
-            AvailableCredits = 3, // Thưởng 3 credit cho user mới
-            IsEmailVerified = false
+            AvailableCredits = 3,
+            IsEmailVerified = false,
+            EmailVerificationToken = verificationToken,
+            EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24)
         };
 
         _context.Users.Add(user);
+        
+        var creditTx = new CreditTransaction
+        {
+            UserId = user.Id,
+            Amount = 3,
+            Reason = "Signup Bonus"
+        };
+        _context.CreditTransactions.Add(creditTx);
+        
         await _context.SaveChangesAsync();
 
-        // Gửi email mock
+        var verificationLink = $"http://localhost:8888/api/auth/verify-email?email={dto.Email}&token={verificationToken}";
         await _emailService.SendEmailAsync(
             dto.Email, 
             "Verify your TechGearAuction account", 
-            $"Welcome {dto.DisplayName}! Please verify your email."
+            $"Welcome {dto.DisplayName}! Please verify your email by clicking: {verificationLink}"
         );
-
-        var token = _jwtProvider.GenerateToken(user);
-
-        return new AuthResponseDto
-        {
-            UserId = user.Id,
-            Email = user.Email,
-            DisplayName = user.DisplayName ?? string.Empty,
-            Role = user.Role.ToString(),
-            Token = token
-        };
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto, string ipAddress, string deviceHash)
     {
+        var isBannedDevice = await _context.BannedDevices.AnyAsync(b => b.DeviceHash == deviceHash);
+        if (isBannedDevice)
+        {
+            throw new Exception("This device has been banned from accessing the system.");
+        }
+
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
@@ -105,12 +113,22 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<bool> VerifyEmailAsync(string email)
+    public async Task<bool> VerifyEmailAsync(string email, string token)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (user == null) return false;
 
+        if (user.IsEmailVerified) return true; // Already verified
+
+        if (user.EmailVerificationToken != token || user.EmailVerificationTokenExpiry < DateTime.UtcNow)
+        {
+            return false;
+        }
+
         user.IsEmailVerified = true;
+        user.EmailVerificationToken = null;
+        user.EmailVerificationTokenExpiry = null;
+
         await _context.SaveChangesAsync();
         return true;
     }
