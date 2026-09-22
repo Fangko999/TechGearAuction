@@ -15,3 +15,4 @@ public class MinioBuckets
     public string Auctions { get; set; } = "auctions";
     public string Evidences { get; set; } = "evidences";
 }
+

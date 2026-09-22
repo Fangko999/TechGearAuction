@@ -88,3 +88,4 @@ public class MinioStorageService : IStorageService
         return $"{protocol}://{_settings.Endpoint}/{bucketName}/{fileName}";
     }
 }
+
