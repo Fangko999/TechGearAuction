@@ -46,3 +46,4 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, List<UserProf
         }).ToList();
     }
 }
+

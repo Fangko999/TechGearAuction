@@ -24,18 +24,16 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.AdminAuditLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Action")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AdminId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -46,8 +44,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EntityType")
                         .IsRequired()
@@ -65,11 +63,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.Appeal", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -81,8 +77,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReportId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -90,8 +86,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -106,14 +102,12 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.AppealEvidence", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AppealId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AppealId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -140,11 +134,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.Auction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("BidIncrement")
                         .HasPrecision(18, 2)
@@ -154,8 +146,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -178,8 +170,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<int>("SellerId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SellerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("StartPrice")
                         .HasPrecision(18, 2)
@@ -198,8 +190,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("WinnerId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("WinnerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -217,14 +209,12 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.AuctionImage", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -251,14 +241,12 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.AuctionWatch", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -269,8 +257,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -301,21 +289,19 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.Bid", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("BidAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("BidderId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BidderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -347,11 +333,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -366,8 +350,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -381,14 +365,12 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.ChatMessage", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChatRoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ChatRoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -403,8 +385,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -420,14 +402,12 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.ChatRoom", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -449,17 +429,15 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.CreditTransaction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -473,8 +451,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -487,14 +465,12 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.Report", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -505,11 +481,11 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReportedUserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReportedUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ReporterId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReporterId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -533,11 +509,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.ReportEvidence", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -549,8 +523,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReportId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -567,17 +541,15 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.SuspiciousActivity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid?>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("AuctionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BidderId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("BidderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -597,8 +569,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SellerId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("SellerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -616,11 +588,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AvailableCredits")
                         .HasColumnType("int");
@@ -683,17 +653,15 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.UserBlock", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("BlockedId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BlockedId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BlockerId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BlockerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -717,11 +685,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.UserFollow", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -729,11 +695,11 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FolloweeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("FolloweeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("FollowerId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("FollowerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -751,11 +717,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
             modelBuilder.Entity("TechGearAuction.Domain.Entities.UserSocialLink", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -773,8 +737,8 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 

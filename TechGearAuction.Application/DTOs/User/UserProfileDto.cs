@@ -2,7 +2,7 @@ namespace TechGearAuction.Application.DTOs.User;
 
 public class UserProfileDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Email { get; set; } = null!;
     public string? DisplayName { get; set; }
     public string? PhoneNumber { get; set; }
@@ -14,4 +14,5 @@ public class UserProfileDto
     public DateTime CreatedAt { get; set; }
     public List<SocialLinkDto> SocialLinks { get; set; } = new List<SocialLinkDto>();
 }
+
 

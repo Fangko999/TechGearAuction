@@ -1,11 +1,11 @@
-﻿using TechGearAuction.Domain.Enums;
+using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Domain.Entities;
 
 public class Auction : BaseEntity
 {
-    public int SellerId { get; set; }
-    public int CategoryId { get; set; }
+    public Guid SellerId { get; set; }
+    public Guid CategoryId { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public decimal StartPrice { get; set; }
@@ -15,7 +15,7 @@ public class Auction : BaseEntity
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public AuctionStatus Status { get; set; } = AuctionStatus.Draft;
-    public int? WinnerId { get; set; }
+    public Guid? WinnerId { get; set; }
     public byte[]? RowVersion { get; set; }
 
     public User Seller { get; set; } = null!;

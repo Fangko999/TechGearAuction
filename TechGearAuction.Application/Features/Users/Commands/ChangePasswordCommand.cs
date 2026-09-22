@@ -40,3 +40,4 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

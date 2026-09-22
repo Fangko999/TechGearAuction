@@ -7,7 +7,7 @@ namespace TechGearAuction.Application.Features.Users.Queries;
 
 public class GetUserByIdQuery : IRequest<UserProfileDto>
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 }
 
 public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserProfileDto>
@@ -50,3 +50,5 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserPro
         };
     }
 }
+
+

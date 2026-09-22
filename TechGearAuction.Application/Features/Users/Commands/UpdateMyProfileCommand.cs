@@ -56,3 +56,4 @@ public class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProfileComm
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

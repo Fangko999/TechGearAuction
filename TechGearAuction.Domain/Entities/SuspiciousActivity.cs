@@ -1,10 +1,10 @@
-﻿namespace TechGearAuction.Domain.Entities;
+namespace TechGearAuction.Domain.Entities;
 
 public class SuspiciousActivity : BaseEntity
 {
-    public int? AuctionId { get; set; }
-    public int? BidderId { get; set; }
-    public int? SellerId { get; set; }
+    public Guid? AuctionId { get; set; }
+    public Guid? BidderId { get; set; }
+    public Guid? SellerId { get; set; }
     public string? IpAddress { get; set; }
     public string? DeviceHash { get; set; }
     public string? Reason { get; set; }

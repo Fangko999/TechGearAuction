@@ -33,7 +33,7 @@ public class AdminUsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById(int id)
+    public async Task<IActionResult> GetUserById(Guid id)
     {
         try
         {
@@ -47,7 +47,7 @@ public class AdminUsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UpdateUserByAdminCommand command)
+    public async Task<IActionResult> UpdateUserProfile(Guid id, [FromBody] UpdateUserByAdminCommand command)
     {
         if (id != command.TargetUserId)
         {
@@ -66,7 +66,7 @@ public class AdminUsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeleteUser(Guid id)
     {
         try
         {
@@ -83,3 +83,6 @@ public class AdminUsersController : ControllerBase
         }
     }
 }
+
+
+

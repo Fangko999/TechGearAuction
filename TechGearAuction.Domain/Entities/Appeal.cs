@@ -1,11 +1,11 @@
-﻿using TechGearAuction.Domain.Enums;
+using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Domain.Entities;
 
 public class Appeal : BaseEntity
 {
-    public int ReportId { get; set; }
-    public int UserId { get; set; }
+    public Guid ReportId { get; set; }
+    public Guid UserId { get; set; }
     public string Description { get; set; } = null!;
     public AppealStatus Status { get; set; } = AppealStatus.Pending;
 

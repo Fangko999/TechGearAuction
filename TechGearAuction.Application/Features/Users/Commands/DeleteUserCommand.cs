@@ -7,7 +7,7 @@ namespace TechGearAuction.Application.Features.Users.Commands;
 
 public class DeleteUserCommand : IRequest
 {
-    public int TargetUserId { get; set; }
+    public Guid TargetUserId { get; set; }
 }
 
 public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
@@ -41,3 +41,5 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+
+

@@ -1,9 +1,9 @@
-﻿namespace TechGearAuction.Domain.Entities;
+namespace TechGearAuction.Domain.Entities;
 
 public class Bid : BaseEntity
 {
-    public int AuctionId { get; set; }
-    public int BidderId { get; set; }
+    public Guid AuctionId { get; set; }
+    public Guid BidderId { get; set; }
     public decimal BidAmount { get; set; }
     public string IpAddress { get; set; } = null!;
     public string DeviceHash { get; set; } = null!;

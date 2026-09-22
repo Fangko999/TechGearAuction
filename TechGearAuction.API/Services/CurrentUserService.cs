@@ -13,7 +13,7 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public int UserId
+    public Guid UserId
     {
         get
         {
@@ -22,7 +22,7 @@ public class CurrentUserService : ICurrentUserService
                               ?? user?.FindFirst("sub")?.Value
                               ?? user?.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
 
-            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int id))
+            if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out Guid id))
             {
                 return id;
             }
@@ -39,3 +39,5 @@ public class CurrentUserService : ICurrentUserService
         }
     }
 }
+
+

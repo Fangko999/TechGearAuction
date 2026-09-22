@@ -1,12 +1,12 @@
-﻿using TechGearAuction.Domain.Enums;
+using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Domain.Entities;
 
 public class Report : BaseEntity
 {
-    public int ReporterId { get; set; }
-    public int ReportedUserId { get; set; }
-    public int? AuctionId { get; set; }
+    public Guid ReporterId { get; set; }
+    public Guid ReportedUserId { get; set; }
+    public Guid? AuctionId { get; set; }
     public ReportType Type { get; set; }
     public string? Description { get; set; }
     public ReportStatus Status { get; set; } = ReportStatus.Pending;

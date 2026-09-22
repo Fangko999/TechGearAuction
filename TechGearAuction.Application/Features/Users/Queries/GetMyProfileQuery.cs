@@ -52,3 +52,4 @@ public class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery, UserP
         };
     }
 }
+

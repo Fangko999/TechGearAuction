@@ -8,7 +8,7 @@ namespace TechGearAuction.Application.Features.Users.Commands;
 
 public class UpdateUserByAdminCommand : IRequest
 {
-    public int TargetUserId { get; set; }
+    public Guid TargetUserId { get; set; }
     public string? DisplayName { get; set; }
     public string? PhoneNumber { get; set; }
     public string? AvatarUrl { get; set; }
@@ -69,3 +69,5 @@ public class UpdateUserByAdminCommandHandler : IRequestHandler<UpdateUserByAdmin
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+
+

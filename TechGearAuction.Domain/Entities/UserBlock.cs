@@ -1,9 +1,9 @@
-﻿namespace TechGearAuction.Domain.Entities;
+namespace TechGearAuction.Domain.Entities;
 
 public class UserBlock : BaseEntity
 {
-    public int BlockerId { get; set; }
-    public int BlockedId { get; set; }
+    public Guid BlockerId { get; set; }
+    public Guid BlockedId { get; set; }
 
     public User Blocker { get; set; } = null!;
     public User Blocked { get; set; } = null!;

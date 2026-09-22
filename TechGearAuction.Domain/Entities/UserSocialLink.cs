@@ -1,8 +1,8 @@
-﻿namespace TechGearAuction.Domain.Entities;
+namespace TechGearAuction.Domain.Entities;
 
 public class UserSocialLink : BaseEntity
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public string? Platform { get; set; }
     public string Url { get; set; } = null!;
 

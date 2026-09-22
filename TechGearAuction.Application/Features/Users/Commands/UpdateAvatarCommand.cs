@@ -48,3 +48,4 @@ public class UpdateAvatarCommandHandler : IRequestHandler<UpdateAvatarCommand, s
         return avatarUrl;
     }
 }
+
