@@ -50,5 +50,55 @@ public class UserService : IUserService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task<UserProfileDto> GetProfileAsync(int userId)
+    {
+        var user = await _context.Users
+            .Include(u => u.SocialLinks)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        return new UserProfileDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            DisplayName = user.DisplayName,
+            PhoneNumber = user.PhoneNumber,
+            AvatarUrl = user.AvatarUrl,
+            AvailableCredits = user.AvailableCredits,
+            Role = user.Role.ToString(),
+            Status = user.Status.ToString(),
+            IsEmailVerified = user.IsEmailVerified,
+            CreatedAt = user.CreatedAt,
+            SocialLinks = user.SocialLinks.Select(link => new SocialLinkDto
+            {
+                Platform = link.Platform ?? "Unknown",
+                Url = link.Url
+            }).ToList()
+        };
+    }
+
+    public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash))
+        {
+            throw new ArgumentException("Incorrect old password.");
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        // UpdatedAt is handled automatically by EF Core via SaveChanges interceptor
+        
+        await _context.SaveChangesAsync();
+    }
 }
 
