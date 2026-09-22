@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.User;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Domain.Entities;
+using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Infrastructure.Services;
 
@@ -98,6 +99,25 @@ public class UserService : IUserService
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
         // UpdatedAt is handled automatically by EF Core via SaveChanges interceptor
         
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteUserAsync(int adminId, int targetUserId)
+    {
+        if (adminId == targetUserId)
+        {
+            throw new ArgumentException("Admin cannot delete their own account.");
+        }
+
+        var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == targetUserId);
+        if (targetUser == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        targetUser.Status = UserStatus.Banned;
+        targetUser.DeletedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
     }
 }
