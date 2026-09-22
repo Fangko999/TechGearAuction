@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TechGearAuction.Application.Common.Models;
 using TechGearAuction.Application.DTOs.User;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Domain.Entities;
@@ -9,10 +10,14 @@ namespace TechGearAuction.Infrastructure.Services;
 public class UserService : IUserService
 {
     private readonly IAppDbContext _context;
+    private readonly IStorageService _storageService;
+    private readonly MinioSettings _minioSettings;
 
-    public UserService(IAppDbContext context)
+    public UserService(IAppDbContext context, IStorageService storageService, Microsoft.Extensions.Options.IOptions<MinioSettings> minioSettings)
     {
         _context = context;
+        _storageService = storageService;
+        _minioSettings = minioSettings.Value;
     }
 
     public async Task UpdateProfileAsync(int userId, UpdateProfileRequestDto dto)
@@ -161,6 +166,25 @@ public class UserService : IUserService
         _context.AdminAuditLogs.Add(auditLog);
 
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<string> UpdateAvatarAsync(int userId, Stream fileStream, string fileName, string contentType)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        var extension = Path.GetExtension(fileName);
+        var newFileName = $"{userId}_{Guid.NewGuid()}{extension}";
+        
+        var avatarUrl = await _storageService.UploadFileAsync(fileStream, newFileName, contentType, _minioSettings.Buckets.Avatars);
+        
+        user.AvatarUrl = avatarUrl;
+        await _context.SaveChangesAsync();
+        
+        return avatarUrl;
     }
 }
 

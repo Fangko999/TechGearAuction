@@ -9,5 +9,6 @@ public interface IUserService
     Task ChangePasswordAsync(int userId, ChangePasswordDto dto);
     Task DeleteUserAsync(int adminId, int targetUserId);
     Task UpdateUserProfileByAdminAsync(int adminId, int targetUserId, UpdateProfileRequestDto dto);
+    Task<string> UpdateAvatarAsync(int userId, Stream fileStream, string fileName, string contentType);
 }
 

@@ -142,5 +142,45 @@ public class UserController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPost("avatar")]
+    public async Task<IActionResult> UpdateAvatar(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { Message = "File is missing." });
+        }
+
+        if (file.Length > 5 * 1024 * 1024)
+        {
+            return BadRequest(new { Message = "File size cannot exceed 5MB." });
+        }
+
+        var allowedContentTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+        if (!allowedContentTypes.Contains(file.ContentType.ToLower()))
+        {
+            return BadRequest(new { Message = "Only JPEG, PNG and WEBP images are allowed." });
+        }
+
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
+                          ?? User.FindFirst("sub")?.Value 
+                          ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { Message = "Invalid token." });
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream();
+            var url = await _userService.UpdateAvatarAsync(userId, stream, file.FileName, file.ContentType);
+            return Ok(new { Message = "Avatar updated successfully.", AvatarUrl = url });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
 

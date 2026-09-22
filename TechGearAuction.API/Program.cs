@@ -50,6 +50,8 @@ builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 // Configure JWT Settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("MinioSettings"));
+builder.Services.AddScoped<IStorageService, MinioStorageService>();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
@@ -83,5 +85,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var storageService = scope.ServiceProvider.GetRequiredService<IStorageService>();
+    try
+    {
+        await storageService.InitializeBucketsAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while initializing Minio buckets.");
+    }
+}
 
 app.Run();
