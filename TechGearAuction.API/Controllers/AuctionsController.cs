@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechGearAuction.Application.Features.Auctions.Commands;
+using TechGearAuction.Application.Features.Auctions.Queries;
 
 namespace TechGearAuction.API.Controllers;
 
@@ -96,4 +97,35 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAuctions([FromQuery] GetAuctionsQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("{id}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAuctionById(Guid id)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAuctionByIdQuery { Id = id });
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+    }
 }
+

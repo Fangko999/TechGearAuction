@@ -71,3 +71,4 @@ public class UploadAuctionImageCommandHandler : IRequestHandler<UploadAuctionIma
         return url;
     }
 }
+

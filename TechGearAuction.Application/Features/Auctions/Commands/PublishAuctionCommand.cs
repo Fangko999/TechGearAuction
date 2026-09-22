@@ -82,3 +82,4 @@ public class PublishAuctionCommandHandler : IRequestHandler<PublishAuctionComman
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

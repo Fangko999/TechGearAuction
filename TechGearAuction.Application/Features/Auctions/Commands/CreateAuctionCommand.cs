@@ -69,3 +69,4 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
         return auction.Id;
     }
 }
+
