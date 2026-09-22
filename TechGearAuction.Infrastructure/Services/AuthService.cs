@@ -81,6 +81,16 @@ public class AuthService : IAuthService
         // Lưu vết IP & Device
         user.LastLoginIp = ipAddress;
         user.LastLoginDeviceHash = deviceHash;
+        
+        var deviceLog = new UserDeviceLog
+        {
+            UserId = user.Id,
+            IpAddress = ipAddress,
+            DeviceHash = deviceHash,
+            LoginTime = DateTime.UtcNow
+        };
+        _context.UserDeviceLogs.Add(deviceLog);
+        
         await _context.SaveChangesAsync();
 
         var token = _jwtProvider.GenerateToken(user);

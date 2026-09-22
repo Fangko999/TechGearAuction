@@ -19,3 +19,4 @@ public class PublicProfileDto
 
     public List<SocialLinkDto> SocialLinks { get; set; } = new List<SocialLinkDto>();
 }
+

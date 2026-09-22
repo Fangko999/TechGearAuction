@@ -27,6 +27,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Appeal> Appeals { get; set; }
     public DbSet<AppealEvidence> AppealEvidences { get; set; }
     public DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
+    public DbSet<UserDeviceLog> UserDeviceLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -106,6 +107,9 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<AdminAuditLog>()
             .HasOne(l => l.Admin).WithMany().HasForeignKey(l => l.AdminId).OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<UserDeviceLog>()
+            .HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Restrict);
+
         // 7. Global Query Filters (Tự động ẩn bản ghi bị xóa mềm)
         modelBuilder.Entity<User>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<UserSocialLink>().HasQueryFilter(e => e.DeletedAt == null);
@@ -123,6 +127,7 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<Appeal>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<AppealEvidence>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<AdminAuditLog>().HasQueryFilter(e => e.DeletedAt == null);
+        modelBuilder.Entity<UserDeviceLog>().HasQueryFilter(e => e.DeletedAt == null);
     }
 
     // 8. Tự động hóa Audit Log & Soft Delete
