@@ -44,6 +44,16 @@ public class AuthController : ControllerBase
             var result = await _authService.LoginAsync(dto, ipAddress, deviceHash);
             return Ok(result);
         }
+        catch (TechGearAuction.Application.Common.Exceptions.BannedUserException ex)
+        {
+            return StatusCode(403, new
+            {
+                Message = ex.Message,
+                BanReason = ex.BanReason,
+                ViolationCount = ex.ViolationCount,
+                CanAppeal = ex.CanAppeal
+            });
+        }
         catch (Exception ex)
         {
             return Unauthorized(new { Message = ex.Message });

@@ -94,6 +94,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<TechGearAuction.API.Middlewares.DeviceBlacklistMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

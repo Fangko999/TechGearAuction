@@ -64,13 +64,21 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto, string ipAddress, string deviceHash)
     {
-        var isBannedDevice = await _context.BannedDevices.AnyAsync(b => b.DeviceHash == deviceHash);
-        if (isBannedDevice)
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (user != null && user.Status == UserStatus.Banned)
         {
-            throw new Exception("This device has been banned from accessing the system.");
+            var bannedDevice = await _context.BannedDevices.FirstOrDefaultAsync(b => b.DeviceHash == user.LastLoginDeviceHash);
+            var reason = bannedDevice?.Reason ?? "Account has been banned due to policy violations.";
+            throw new TechGearAuction.Application.Common.Exceptions.BannedUserException(reason, user.ViolationCount, true);
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        var bannedDeviceCheck = await _context.BannedDevices.FirstOrDefaultAsync(b => b.DeviceHash == deviceHash);
+        if (bannedDeviceCheck != null)
+        {
+            throw new TechGearAuction.Application.Common.Exceptions.BannedUserException(bannedDeviceCheck.Reason ?? "This device has been banned.", user?.ViolationCount ?? 0, true);
+        }
+
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
             throw new Exception("Invalid credentials");
