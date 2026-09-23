@@ -6,3 +6,4 @@ public interface IAuctionNotificationService
     Task NotifyPriceUpdateAsync(Guid auctionId, decimal newPrice);
     Task NotifyAuctionEndedAsync(Guid auctionId, string winnerName, decimal finalPrice);
 }
+

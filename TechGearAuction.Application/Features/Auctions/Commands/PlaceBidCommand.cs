@@ -113,3 +113,4 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
         }
     }
 }
+

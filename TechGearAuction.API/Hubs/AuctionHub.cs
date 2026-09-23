@@ -15,3 +15,4 @@ public class AuctionHub : Hub<IAuctionHub>
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, auctionId.ToString());
     }
 }
+

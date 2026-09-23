@@ -6,3 +6,4 @@ public interface IAuctionHub
     Task ReceivePriceUpdate(decimal newPrice);
     Task AuctionEnded(string winnerName, decimal finalPrice);
 }
+

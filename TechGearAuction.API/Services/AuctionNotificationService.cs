@@ -29,3 +29,4 @@ public class AuctionNotificationService : IAuctionNotificationService
         await _hubContext.Clients.Group(auctionId.ToString()).AuctionEnded(winnerName, finalPrice);
     }
 }
+
