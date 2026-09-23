@@ -76,3 +76,4 @@ public class SubmitBanAppealTests : IDisposable
         _factory.Dispose();
     }
 }
+

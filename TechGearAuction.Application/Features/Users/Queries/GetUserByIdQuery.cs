@@ -43,6 +43,11 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserPro
             Status = user.Status.ToString(),
             IsEmailVerified = user.IsEmailVerified,
             CreatedAt = user.CreatedAt,
+            ViolationCount = user.ViolationCount,
+            ReportedAsSellerCount = user.ReportedAsSellerCount,
+            ReportedAsBuyerCount = user.ReportedAsBuyerCount,
+            SuspiciousBidderCount = user.SuspiciousBidderCount,
+            SuspiciousSellerCount = user.SuspiciousSellerCount,
             SocialLinks = user.SocialLinks.Select(link => new SocialLinkDto
             {
                 Platform = link.Platform ?? "Unknown",

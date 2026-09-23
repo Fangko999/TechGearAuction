@@ -14,3 +14,4 @@ public class BannedUserException : Exception
         CanAppeal = canAppeal;
     }
 }
+

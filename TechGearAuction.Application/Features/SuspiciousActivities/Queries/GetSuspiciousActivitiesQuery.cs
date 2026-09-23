@@ -9,6 +9,7 @@ public class SuspiciousActivityDto
 {
     public Guid Id { get; set; }
     public Guid? AuctionId { get; set; }
+    public string? AuctionTitle { get; set; }
     public Guid? BidderId { get; set; }
     public string? BidderName { get; set; }
     public int BidderSuspiciousCount { get; set; }
@@ -43,6 +44,7 @@ public class GetSuspiciousActivitiesQueryHandler : IRequestHandler<GetSuspicious
         var query = _context.SuspiciousActivities
             .Include(a => a.Bidder)
             .Include(a => a.Seller)
+            .Include(a => a.Auction)
             .AsQueryable();
 
         if (request.IsReviewed.HasValue)
@@ -62,6 +64,7 @@ public class GetSuspiciousActivitiesQueryHandler : IRequestHandler<GetSuspicious
         {
             Id = a.Id,
             AuctionId = a.AuctionId,
+            AuctionTitle = a.Auction?.Title,
             BidderId = a.BidderId,
             BidderName = a.Bidder?.DisplayName,
             BidderSuspiciousCount = a.Bidder?.SuspiciousBidderCount ?? 0,

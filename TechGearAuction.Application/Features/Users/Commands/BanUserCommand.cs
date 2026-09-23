@@ -44,6 +44,20 @@ public class BanUserCommandHandler : IRequestHandler<BanUserCommand>
 
         targetUser.Status = UserStatus.Banned;
 
+        if (!string.IsNullOrEmpty(targetUser.LastLoginDeviceHash))
+        {
+            var existing = await _context.BannedDevices.AnyAsync(b => b.DeviceHash == targetUser.LastLoginDeviceHash);
+            if (!existing)
+            {
+                _context.BannedDevices.Add(new BannedDevice
+                {
+                    DeviceHash = targetUser.LastLoginDeviceHash,
+                    Reason = $"Manual ban: {request.Reason}",
+                    BannedAt = DateTime.UtcNow
+                });
+            }
+        }
+
         var auditLog = new AdminAuditLog
         {
             AdminId = adminId,

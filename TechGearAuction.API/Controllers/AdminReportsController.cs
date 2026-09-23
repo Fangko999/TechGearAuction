@@ -18,6 +18,34 @@ public class AdminReportsController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetReports([FromQuery] GetReportsQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetReportById(Guid id)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetReportByIdQuery { Id = id });
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+    }
+
     [HttpPut("{id}/resolve")]
     public async Task<IActionResult> ResolveReport(Guid id, [FromBody] ResolveReportCommand command)
     {

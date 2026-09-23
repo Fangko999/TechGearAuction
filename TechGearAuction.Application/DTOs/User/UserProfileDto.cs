@@ -12,6 +12,11 @@ public class UserProfileDto
     public string Status { get; set; } = null!;
     public bool IsEmailVerified { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int ViolationCount { get; set; }
+    public int ReportedAsSellerCount { get; set; }
+    public int ReportedAsBuyerCount { get; set; }
+    public int SuspiciousBidderCount { get; set; }
+    public int SuspiciousSellerCount { get; set; }
     public List<SocialLinkDto> SocialLinks { get; set; } = new List<SocialLinkDto>();
 }
 
