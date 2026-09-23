@@ -184,3 +184,4 @@ public class ChatRoomTests : IDisposable
 
     public void Dispose() => _factory.Dispose();
 }
+

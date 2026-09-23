@@ -15,3 +15,4 @@ public class ChatHub : Hub<IChatHub>
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatRoomId.ToString());
     }
 }
+

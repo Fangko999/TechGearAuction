@@ -2,6 +2,8 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Features.Users.Commands;
 using TechGearAuction.Application.Features.Users.Queries;
+using TechGearAuction.Application.Interfaces;
+using Moq;
 using TechGearAuction.Tests.Helpers;
 
 namespace TechGearAuction.Tests.Users;
@@ -9,8 +11,13 @@ namespace TechGearAuction.Tests.Users;
 public class SocialTests : IDisposable
 {
     private readonly TestDbFactory _factory;
+    private readonly Mock<IAuctionNotificationService> _notificationMock;
 
-    public SocialTests() => _factory = new TestDbFactory();
+    public SocialTests()
+    {
+        _factory = new TestDbFactory();
+        _notificationMock = new Mock<IAuctionNotificationService>();
+    }
 
     // ─── Follow Tests ────────────────────────────────────────────────────────
 
@@ -77,7 +84,7 @@ public class SocialTests : IDisposable
             .Handle(new ToggleUserFollowCommand { FolloweeId = TestDbFactory.UserId }, CancellationToken.None);
 
         // UserId blocks User2Id
-        await new ToggleUserBlockCommandHandler(_factory.CreateContext(), user1Svc)
+        await new ToggleUserBlockCommandHandler(_factory.CreateContext(), user1Svc, _notificationMock.Object)
             .Handle(new ToggleUserBlockCommand { BlockedId = TestDbFactory.User2Id }, CancellationToken.None);
 
         using var ctx = _factory.CreateContext();
@@ -96,7 +103,7 @@ public class SocialTests : IDisposable
     {
         var svc = new MockCurrentUserService(TestDbFactory.UserId);
         var ctx = _factory.CreateContext();
-        var handler = new ToggleUserBlockCommandHandler(ctx, svc);
+        var handler = new ToggleUserBlockCommandHandler(ctx, svc, _notificationMock.Object);
 
         var act = () => handler.Handle(
             new ToggleUserBlockCommand { BlockedId = TestDbFactory.UserId }, CancellationToken.None);
@@ -109,7 +116,7 @@ public class SocialTests : IDisposable
     {
         // Setup: UserId blocks User2Id
         var svc = new MockCurrentUserService(TestDbFactory.UserId);
-        await new ToggleUserBlockCommandHandler(_factory.CreateContext(), svc)
+        await new ToggleUserBlockCommandHandler(_factory.CreateContext(), svc, _notificationMock.Object)
             .Handle(new ToggleUserBlockCommand { BlockedId = TestDbFactory.User2Id }, CancellationToken.None);
 
         var ctx = _factory.CreateContext();
@@ -118,6 +125,69 @@ public class SocialTests : IDisposable
 
         result.TotalCount.Should().Be(1);
         result.Items.Should().Contain(u => u.Id == TestDbFactory.User2Id);
+    }
+
+    [Fact]
+    public async Task ToggleBlock_WhenBlockedUserIsTopBidder_ShouldCancelBidAndRollbackPrice()
+    {
+        Guid auctionId = Guid.NewGuid();
+        Guid otherBidderId = TestDbFactory.AdminId;
+
+        using (var setupCtx = _factory.CreateContext())
+        {
+            var auction = new TechGearAuction.Domain.Entities.Auction
+            {
+                Id = auctionId,
+                Title = "Test Auction",
+                StartPrice = 100,
+                CurrentPrice = 300,
+                Status = TechGearAuction.Domain.Enums.AuctionStatus.Active,
+                SellerId = TestDbFactory.UserId, // Seller is UserId
+                CategoryId = TestDbFactory.ChildCategoryId,
+                StartTime = DateTime.UtcNow.AddDays(-1),
+                EndTime = DateTime.UtcNow.AddDays(1)
+            };
+            setupCtx.Auctions.Add(auction);
+
+            // Admin bids 200
+            setupCtx.Bids.Add(new TechGearAuction.Domain.Entities.Bid
+            {
+                AuctionId = auctionId,
+                BidderId = otherBidderId,
+                BidAmount = 200,
+                IpAddress = "1", DeviceHash = "1"
+            });
+
+            // User2 bids 300 (Top Bidder)
+            setupCtx.Bids.Add(new TechGearAuction.Domain.Entities.Bid
+            {
+                AuctionId = auctionId,
+                BidderId = TestDbFactory.User2Id,
+                BidAmount = 300,
+                IpAddress = "2", DeviceHash = "2"
+            });
+
+            await setupCtx.SaveChangesAsync();
+        }
+
+        var svc = new MockCurrentUserService(TestDbFactory.UserId);
+        var ctx = _factory.CreateContext();
+        var handler = new ToggleUserBlockCommandHandler(ctx, svc, _notificationMock.Object);
+
+        // Seller blocks User2
+        await handler.Handle(new ToggleUserBlockCommand { BlockedId = TestDbFactory.User2Id }, CancellationToken.None);
+
+        using var verifyCtx = _factory.CreateContext();
+        var auctionVerify = await verifyCtx.Auctions.FindAsync(auctionId);
+        auctionVerify!.CurrentPrice.Should().Be(200);
+
+        var topBid = await verifyCtx.Bids.FirstOrDefaultAsync(b => b.BidderId == TestDbFactory.User2Id);
+        topBid!.IsCanceled.Should().BeTrue();
+
+        var adminBid = await verifyCtx.Bids.FirstOrDefaultAsync(b => b.BidderId == otherBidderId);
+        adminBid!.IsCanceled.Should().BeFalse();
+
+        _notificationMock.Verify(n => n.NotifyPriceUpdateAsync(auctionId, 200), Times.Once);
     }
 
     public void Dispose() => _factory.Dispose();

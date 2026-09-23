@@ -95,3 +95,4 @@ public class MatchmakingTests : IDisposable
 
     public void Dispose() => _factory.Dispose();
 }
+

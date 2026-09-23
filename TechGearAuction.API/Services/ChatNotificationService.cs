@@ -24,3 +24,4 @@ public class ChatNotificationService : IChatNotificationService
         await _hubContext.Clients.Group(chatRoomId.ToString()).ReceiveMessageRead(chatRoomId, messageId);
     }
 }
+

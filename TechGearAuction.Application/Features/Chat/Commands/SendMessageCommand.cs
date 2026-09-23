@@ -69,3 +69,4 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, Gui
         return message.Id;
     }
 }
+
