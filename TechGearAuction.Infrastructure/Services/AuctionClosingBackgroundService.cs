@@ -67,6 +67,16 @@ public class AuctionClosingBackgroundService : BackgroundService
                 };
                 context.ChatRooms.Add(chatRoom);
 
+                var sysMessage = new ChatMessage
+                {
+                    ChatRoom = chatRoom,
+                    SenderId = null,
+                    Content = $"Phòng chat tự động khởi tạo. Giá chốt: {auction.CurrentPrice:N0}",
+                    MessageType = ChatMessageType.SystemText,
+                    IsRead = false
+                };
+                context.ChatMessages.Add(sysMessage);
+
                 // Get winner name for notification
                 var winner = await context.Users.FindAsync(new object[] { highestBid.BidderId }, stoppingToken);
                 await notificationService.NotifyAuctionEndedAsync(auction.Id, winner?.DisplayName ?? "Anonymous", auction.CurrentPrice);

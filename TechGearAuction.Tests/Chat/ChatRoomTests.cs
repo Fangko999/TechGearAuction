@@ -56,7 +56,7 @@ public class ChatRoomTests : IDisposable
         msg.Should().NotBeNull();
         msg!.Content.Should().Be("Hello Winner!");
         
-        _notificationMock.Verify(n => n.NotifyNewMessageAsync(_chatRoomId, TestDbFactory.UserId, "Hello Winner!", It.IsAny<DateTime>()), Times.Once);
+        _notificationMock.Verify(n => n.NotifyNewMessageAsync(_chatRoomId, TestDbFactory.UserId, "Hello Winner!", "Text", null, It.IsAny<DateTime>()), Times.Once);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class ChatRoomTests : IDisposable
 
         result.Should().HaveCount(1);
         result[0].Id.Should().Be(_chatRoomId);
-        result[0].PartnerId.Should().Be(TestDbFactory.User2Id);
+        result[0].OpponentId.Should().Be(TestDbFactory.User2Id);
     }
 
     [Fact]

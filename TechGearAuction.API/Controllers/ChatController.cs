@@ -20,11 +20,11 @@ public class ChatController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetMyChatRooms()
+    public async Task<IActionResult> GetMyChatRooms([FromQuery] string role = "All", [FromQuery] string folder = "Inbox")
     {
         try
         {
-            var result = await _mediator.Send(new GetMyChatRoomsQuery());
+            var result = await _mediator.Send(new GetMyChatRoomsQuery { Role = role, Folder = folder });
             return Ok(result);
         }
         catch (Exception ex)
@@ -60,7 +60,9 @@ public class ChatController : ControllerBase
             var result = await _mediator.Send(new SendMessageCommand 
             { 
                 ChatRoomId = roomId, 
-                Content = dto.Content 
+                Content = dto.Content,
+                MessageType = dto.MessageType,
+                MediaUrl = dto.MediaUrl
             });
             return Ok(new { MessageId = result });
         }
@@ -83,5 +85,41 @@ public class ChatController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
-}
 
+    [HttpPut("{roomId}/archive")]
+    public async Task<IActionResult> ArchiveChatRoom(Guid roomId)
+    {
+        try
+        {
+            await _mediator.Send(new ArchiveChatRoomCommand { ChatRoomId = roomId });
+            return Ok(new { Message = "Chat room archived successfully." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("media")]
+    public async Task<IActionResult> UploadMedia([FromForm] IFormFile file)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { Message = "File is missing." });
+
+            using var stream = file.OpenReadStream();
+            var url = await _mediator.Send(new UploadChatMediaCommand 
+            { 
+                FileStream = stream,
+                FileName = file.FileName,
+                ContentType = file.ContentType
+            });
+            return Ok(new { Url = url });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+}

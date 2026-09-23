@@ -86,6 +86,16 @@ public class BuyNowCommandHandler : IRequestHandler<BuyNowCommand>
         };
         _context.ChatRooms.Add(chatRoom);
 
+        var sysMessage = new ChatMessage
+        {
+            ChatRoom = chatRoom,
+            SenderId = null,
+            Content = $"Phòng chat tự động khởi tạo. Giá chốt: {auction.CurrentPrice:N0}",
+            MessageType = ChatMessageType.SystemText,
+            IsRead = false
+        };
+        _context.ChatMessages.Add(sysMessage);
+
         try
         {
             await _context.SaveChangesAsync(cancellationToken);

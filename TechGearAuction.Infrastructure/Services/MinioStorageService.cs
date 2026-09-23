@@ -33,7 +33,8 @@ public class MinioStorageService : IStorageService
         {
             { _settings.Buckets.Avatars, true }, // true = Public Read
             { _settings.Buckets.Auctions, true },
-            { _settings.Buckets.Evidences, false } // private
+            { _settings.Buckets.Evidences, false }, // private
+            { _settings.Buckets.ChatMedia, true } // public read for chat media
         };
 
         foreach (var bucket in bucketsToCreate)

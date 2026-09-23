@@ -132,7 +132,7 @@ public class AppDbContext : DbContext, IAppDbContext
             .HasOne(w => w.Auction).WithMany().HasForeignKey(w => w.AuctionId).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<ChatMessage>()
-            .HasOne(m => m.Sender).WithMany().HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict);
+            .HasOne(m => m.Sender).WithMany().HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
 
         // 7. Global Query Filters (Tự động ẩn bản ghi bị xóa mềm)
         modelBuilder.Entity<User>().HasQueryFilter(e => e.DeletedAt == null);

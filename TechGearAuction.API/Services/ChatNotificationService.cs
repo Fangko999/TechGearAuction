@@ -14,9 +14,9 @@ public class ChatNotificationService : IChatNotificationService
         _hubContext = hubContext;
     }
 
-    public async Task NotifyNewMessageAsync(Guid chatRoomId, Guid senderId, string content, DateTime sentAt)
+    public async Task NotifyNewMessageAsync(Guid chatRoomId, Guid? senderId, string content, string messageType, string? mediaUrl, DateTime sentAt)
     {
-        await _hubContext.Clients.Group(chatRoomId.ToString()).ReceiveNewMessage(chatRoomId, senderId, content, sentAt);
+        await _hubContext.Clients.Group(chatRoomId.ToString()).ReceiveNewMessage(chatRoomId, senderId, content, messageType, mediaUrl, sentAt);
     }
 
     public async Task NotifyMessageReadAsync(Guid chatRoomId, Guid messageId)

@@ -56,8 +56,10 @@ public class GetChatRoomMessagesQueryHandler : IRequestHandler<GetChatRoomMessag
             Id = m.Id,
             ChatRoomId = m.ChatRoomId,
             SenderId = m.SenderId,
-            SenderName = m.Sender.DisplayName,
+            SenderName = m.Sender?.DisplayName,
             Content = m.Content,
+            MessageType = m.MessageType.ToString(),
+            MediaUrl = m.MediaUrl,
             IsRead = m.IsRead,
             CreatedAt = m.CreatedAt
         }).ToList();

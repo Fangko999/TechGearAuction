@@ -14,5 +14,6 @@ public class MinioBuckets
     public string Avatars { get; set; } = "avatars";
     public string Auctions { get; set; } = "auctions";
     public string Evidences { get; set; } = "evidences";
+    public string ChatMedia { get; set; } = "chat-media";
 }
 

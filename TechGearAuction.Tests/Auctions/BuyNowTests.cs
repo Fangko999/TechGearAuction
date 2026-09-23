@@ -110,6 +110,7 @@ public class BuyNowTests : IDisposable
         ctxMock.Setup(c => c.Users).Returns(_factory.CreateContext().Users);
         ctxMock.Setup(c => c.UserBlocks).Returns(_factory.CreateContext().UserBlocks);
         ctxMock.Setup(c => c.ChatRooms).Returns(_factory.CreateContext().ChatRooms);
+        ctxMock.Setup(c => c.ChatMessages).Returns(_factory.CreateContext().ChatMessages);
 
         ctxMock.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new DbUpdateConcurrencyException());
