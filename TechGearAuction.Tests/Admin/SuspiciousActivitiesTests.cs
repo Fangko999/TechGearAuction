@@ -75,3 +75,4 @@ public class SuspiciousActivitiesTests : IDisposable
         _factory.Dispose();
     }
 }
+

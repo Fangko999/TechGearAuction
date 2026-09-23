@@ -20,6 +20,9 @@ public class User : BaseEntity
     public string? PasswordResetToken { get; set; }
     public DateTime? PasswordResetTokenExpiry { get; set; }
 
+    // Enforcement
+    public int ViolationCount { get; set; } = 0;
+
     // Rating / Reviews
     public double AverageRating { get; set; } = 0;
     public int TotalReviews { get; set; } = 0;

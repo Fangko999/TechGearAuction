@@ -84,3 +84,4 @@ public class GetSuspiciousActivitiesQueryHandler : IRequestHandler<GetSuspicious
         };
     }
 }
+

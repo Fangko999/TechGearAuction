@@ -30,3 +30,4 @@ public class ReviewSuspiciousActivityCommandHandler : IRequestHandler<ReviewSusp
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

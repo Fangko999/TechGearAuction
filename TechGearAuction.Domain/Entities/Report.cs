@@ -7,6 +7,7 @@ public class Report : BaseEntity
     public Guid ReporterId { get; set; }
     public Guid ReportedUserId { get; set; }
     public Guid? AuctionId { get; set; }
+    public Guid? ChatRoomId { get; set; }
     public ReportType Type { get; set; }
     public string? Description { get; set; }
     public ReportStatus Status { get; set; } = ReportStatus.Pending;
