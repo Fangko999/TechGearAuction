@@ -25,10 +25,15 @@ public class ToggleAuctionWatchCommandHandler : IRequestHandler<ToggleAuctionWat
     {
         var userId = _currentUserService.UserId;
 
-        var auctionExists = await _context.Auctions.AnyAsync(a => a.Id == request.AuctionId, cancellationToken);
-        if (!auctionExists)
+        var auction = await _context.Auctions.FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken);
+        if (auction == null)
         {
             throw new Exception("Auction not found.");
+        }
+
+        if (auction.SellerId == userId)
+        {
+            throw new Exception("You cannot watch your own auction.");
         }
 
         var existingWatch = await _context.AuctionWatches

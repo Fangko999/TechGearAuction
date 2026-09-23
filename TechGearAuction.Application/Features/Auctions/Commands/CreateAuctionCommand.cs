@@ -41,6 +41,10 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
         {
             throw new ArgumentException("End time must be after Start time.");
         }
+        if ((request.EndTime - request.StartTime).TotalHours < 3)
+        {
+            throw new ArgumentException("Auction duration must be at least 3 hours.");
+        }
 
         var categoryExists = await _context.Categories.AnyAsync(c => c.Id == request.CategoryId, cancellationToken);
         if (!categoryExists)

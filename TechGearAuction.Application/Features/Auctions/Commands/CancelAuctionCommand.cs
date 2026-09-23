@@ -35,15 +35,20 @@ public class CancelAuctionCommandHandler : IRequestHandler<CancelAuctionCommand>
             throw new UnauthorizedAccessException("You can only cancel your own auctions.");
         }
 
+        if (auction.Status == AuctionStatus.Active)
+        {
+            throw new Exception("Active auctions cannot be cancelled. There may be bidders participating.");
+        }
         if (auction.Status != AuctionStatus.Draft && auction.Status != AuctionStatus.Scheduled)
         {
-            throw new Exception("Only draft or scheduled auctions can be cancelled. Active auctions cannot be cancelled directly.");
+            throw new Exception("Only draft or scheduled auctions can be cancelled.");
         }
 
+        var oldStatus = auction.Status;
         auction.Status = AuctionStatus.Cancelled;
 
-        // Optionally, we could refund the 1 credit here if it was scheduled (since publishing cost 1 credit).
-        if (auction.Status == AuctionStatus.Scheduled)
+        // Refund the 1 credit if it was scheduled (since publishing cost 1 credit).
+        if (oldStatus == AuctionStatus.Scheduled)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == _currentUserService.UserId, cancellationToken);
             if (user != null)

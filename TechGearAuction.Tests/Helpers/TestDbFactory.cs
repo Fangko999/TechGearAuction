@@ -19,6 +19,10 @@ public class TestDbFactory : IDisposable
     public static readonly Guid AdminId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     public static readonly Guid UserId  = Guid.Parse("00000000-0000-0000-0000-000000000002");
     public static readonly Guid User2Id = Guid.Parse("00000000-0000-0000-0000-000000000003");
+    
+    public static readonly Guid ParentCategoryId = Guid.Parse("00000000-0000-0000-0000-000000000004");
+    public static readonly Guid ChildCategoryId = Guid.Parse("00000000-0000-0000-0000-000000000005");
+    public static readonly Guid ActiveAuctionId = Guid.Parse("00000000-0000-0000-0000-000000000006");
 
     public TestDbFactory()
     {
@@ -89,6 +93,28 @@ public class TestDbFactory : IDisposable
             Amount = 3,
             Reason = "Signup Bonus",
             CreatedAt = DateTime.UtcNow.AddDays(-1)
+        });
+
+        // Seed Categories
+        var parentCategory = new Category { Id = ParentCategoryId, Name = "Electronics" };
+        var childCategory = new Category { Id = ChildCategoryId, Name = "Laptops", ParentId = ParentCategoryId };
+        ctx.Categories.AddRange(parentCategory, childCategory);
+
+        // Seed an active auction
+        ctx.Auctions.Add(new Auction
+        {
+            Id = ActiveAuctionId,
+            Title = "MacBook Pro",
+            Description = "M1 Pro",
+            StartPrice = 1000,
+            CurrentPrice = 1000,
+            BidIncrement = 50,
+            BuyNowPrice = 2000,
+            StartTime = DateTime.UtcNow.AddDays(-1),
+            EndTime = DateTime.UtcNow.AddDays(1),
+            Status = AuctionStatus.Active,
+            SellerId = UserId,
+            CategoryId = childCategory.Id
         });
 
         ctx.SaveChanges();
