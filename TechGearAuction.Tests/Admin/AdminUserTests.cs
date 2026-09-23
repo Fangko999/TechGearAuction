@@ -48,6 +48,19 @@ public class AdminUserTests : IDisposable
         result.Items.Should().Contain(u => u.Id == TestDbFactory.User2Id);
     }
 
+    [Fact]
+    public async Task GetUserById_Admin_ShouldReturnUserDto()
+    {
+        var ctx = _factory.CreateContext();
+        var handler = new GetUserByIdQueryHandler(ctx);
+
+        var result = await handler.Handle(new GetUserByIdQuery { Id = TestDbFactory.UserId }, CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(TestDbFactory.UserId);
+        result.Email.Should().Be("user@test.com");
+    }
+
     // ─── AdminUpdateUserProfile ───────────────────────────────────────────────
 
     [Fact]
