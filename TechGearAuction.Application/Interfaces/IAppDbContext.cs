@@ -24,6 +24,7 @@ public interface IAppDbContext
     DbSet<Appeal> Appeals { get; set; }
     DbSet<AppealEvidence> AppealEvidences { get; set; }
     DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
+    DbSet<Notification> Notifications { get; set; }
     DbSet<UserDeviceLog> UserDeviceLogs { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

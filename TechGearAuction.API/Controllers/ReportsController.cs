@@ -1,27 +1,25 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TechGearAuction.Application.Features.Admin.Queries;
 
 namespace TechGearAuction.API.Controllers;
 
 [ApiController]
-[Route("api/admin/audit-logs")]
-[Authorize(Roles = "Admin")]
-public class AdminAuditLogsController : ControllerBase
+[Route("api/reports")]
+[Authorize]
+public class ReportsController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    public AdminAuditLogsController(IMediator mediator)
+    public ReportsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetLogs([FromQuery] GetAuditLogsQuery query)
+    [HttpGet("my-reports")]
+    public async Task<IActionResult> GetMyReports([FromQuery] TechGearAuction.Application.Features.Reports.Queries.GetMyReportsQuery query)
     {
         var result = await _mediator.Send(query);
         return Ok(result);
     }
 }
-

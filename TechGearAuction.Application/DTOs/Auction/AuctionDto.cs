@@ -21,6 +21,9 @@ public class AuctionDto
     public string Status { get; set; } = null!;
     public string? PrimaryImageUrl { get; set; }
     public string SellerName { get; set; } = null!;
+    
+    public bool IsWatched { get; set; }
+    public bool IsFollowedSeller { get; set; }
 }
 
 public class AuctionDetailDto : AuctionDto

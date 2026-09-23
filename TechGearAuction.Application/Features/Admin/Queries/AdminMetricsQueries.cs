@@ -77,3 +77,4 @@ public class GetRevenueChartQueryHandler : IRequestHandler<GetRevenueChartQuery,
             .ToList();
     }
 }
+

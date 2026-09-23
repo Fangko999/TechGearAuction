@@ -184,6 +184,45 @@ public class AuctionsController : ControllerBase
         }
     }
 
+    [HttpGet("trending")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTrendingAuctions()
+    {
+        var result = await _mediator.Send(new GetTrendingAuctionsQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("ending-soon")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEndingSoonAuctions()
+    {
+        var result = await _mediator.Send(new GetEndingSoonAuctionsQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("recent-winners")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetRecentWinners()
+    {
+        var result = await _mediator.Send(new GetRecentWinnersQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("feed")]
+    [Authorize]
+    public async Task<IActionResult> GetFeedAuctions([FromQuery] GetFeedAuctionsQuery query)
+    {
+        try
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+    }
+
     [HttpGet("me")]
     public async Task<IActionResult> GetMyAuctions([FromQuery] GetMyAuctionsQuery query)
     {

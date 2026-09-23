@@ -19,6 +19,34 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet("me/watchlists/ending-soon")]
+    public async Task<IActionResult> GetWatchlistEndingSoon()
+    {
+        var result = await _mediator.Send(new TechGearAuction.Application.Features.Auctions.Queries.GetWatchlistEndingSoonQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("me/bids/active")]
+    public async Task<IActionResult> GetMyActiveBids()
+    {
+        var result = await _mediator.Send(new TechGearAuction.Application.Features.Users.Queries.GetMyActiveBidsQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("me/auctions/won")]
+    public async Task<IActionResult> GetMyWonAuctions([FromQuery] TechGearAuction.Application.Features.Users.Queries.GetMyWonAuctionsQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("me/blocks")]
+    public async Task<IActionResult> GetMyBlocks()
+    {
+        var result = await _mediator.Send(new TechGearAuction.Application.Features.Users.Queries.GetBlockedUsersQuery());
+        return Ok(result);
+    }
+
     [HttpGet("me")]
     public async Task<IActionResult> GetMyProfile()
     {

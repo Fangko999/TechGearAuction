@@ -10,6 +10,7 @@ namespace TechGearAuction.Application.Features.Auctions.Queries;
 public class GetMyAuctionsQuery : IRequest<PagedResult<AuctionDto>>
 {
     public string? Status { get; set; }
+    public string? Keyword { get; set; }
     public int PageIndex { get; set; } = 1;
     public int PageSize { get; set; } = 10;
 }
@@ -37,6 +38,11 @@ public class GetMyAuctionsQueryHandler : IRequestHandler<GetMyAuctionsQuery, Pag
         if (!string.IsNullOrEmpty(request.Status) && Enum.TryParse<AuctionStatus>(request.Status, true, out var statusEnum))
         {
             query = query.Where(a => a.Status == statusEnum);
+        }
+
+        if (!string.IsNullOrEmpty(request.Keyword))
+        {
+            query = query.Where(a => a.Title.Contains(request.Keyword));
         }
 
         query = query.OrderByDescending(a => a.CreatedAt);

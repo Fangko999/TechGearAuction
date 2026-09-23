@@ -53,3 +53,4 @@ public class GetBlacklistsQueryHandler : IRequestHandler<GetBlacklistsQuery, Pag
         };
     }
 }
+

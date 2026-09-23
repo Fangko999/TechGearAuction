@@ -69,3 +69,4 @@ public class ResolveAppealCommandHandler : IRequestHandler<ResolveAppealCommand>
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

@@ -31,3 +31,4 @@ public class AdminMetricsController : ControllerBase
         return Ok(result);
     }
 }
+

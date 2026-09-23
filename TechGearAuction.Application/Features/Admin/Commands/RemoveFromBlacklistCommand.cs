@@ -41,3 +41,4 @@ public class RemoveFromBlacklistCommandHandler : IRequestHandler<RemoveFromBlack
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+

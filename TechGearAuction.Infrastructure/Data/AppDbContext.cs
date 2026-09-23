@@ -27,6 +27,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Appeal> Appeals { get; set; }
     public DbSet<AppealEvidence> AppealEvidences { get; set; }
     public DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
     public DbSet<UserDeviceLog> UserDeviceLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
