@@ -221,13 +221,50 @@ public class AuctionsController : ControllerBase
             await _mediator.Send(command);
             return Ok(new { Message = "Bid placed successfully." });
         }
-        catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
-        {
-            return StatusCode(409, new { Message = "Another user placed a bid at the exact same time. Please refresh and try again." });
-        }
-        catch (Exception ex) when (ex.Message.Contains("exact same time"))
+        catch (TechGearAuction.Application.Common.Exceptions.ConcurrencyException ex)
         {
             return StatusCode(409, new { Message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("{id}/buy-now")]
+    [Authorize]
+    public async Task<IActionResult> BuyNow(Guid id)
+    {
+        try
+        {
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
+                ?? "Unknown";
+            
+            var deviceHash = Request.Headers["X-Device-Hash"].FirstOrDefault() 
+                ?? "Unknown";
+
+            var command = new BuyNowCommand
+            {
+                AuctionId = id,
+                IpAddress = ipAddress,
+                DeviceHash = deviceHash
+            };
+
+            await _mediator.Send(command);
+            return Ok(new { Message = "Buy Now successful." });
+        }
+        catch (TechGearAuction.Application.Common.Exceptions.ConcurrencyException ex)
+        {
+            return StatusCode(409, new { Message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
         }
         catch (Exception ex)
         {
