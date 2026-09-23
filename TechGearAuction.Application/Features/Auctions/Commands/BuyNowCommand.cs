@@ -77,6 +77,15 @@ public class BuyNowCommandHandler : IRequestHandler<BuyNowCommand>
         auction.Status = AuctionStatus.Completed;
         auction.WinnerId = bidderId;
 
+        // Create ChatRoom
+        var chatRoom = new ChatRoom
+        {
+            AuctionId = auction.Id,
+            Status = ChatRoomStatus.Active,
+            ExpiresAt = DateTime.UtcNow.AddDays(30)
+        };
+        _context.ChatRooms.Add(chatRoom);
+
         try
         {
             await _context.SaveChangesAsync(cancellationToken);
@@ -90,3 +99,4 @@ public class BuyNowCommandHandler : IRequestHandler<BuyNowCommand>
         await _notificationService.NotifyAuctionEndedAsync(auction.Id, bidderName, auction.CurrentPrice);
     }
 }
+

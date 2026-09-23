@@ -150,3 +150,4 @@ public class AuctionClosingJobTests : IDisposable
 
     public void Dispose() => _factory.Dispose();
 }
+

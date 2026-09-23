@@ -235,3 +235,4 @@ public class PlaceBidTests : IDisposable
 
     public void Dispose() => _factory.Dispose();
 }
+

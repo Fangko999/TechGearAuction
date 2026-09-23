@@ -59,8 +59,10 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("MinioSettings"));
 builder.Services.AddScoped<IStorageService, MinioStorageService>();
 builder.Services.AddScoped<IAuctionNotificationService, AuctionNotificationService>();
+builder.Services.AddScoped<IChatNotificationService, ChatNotificationService>();
 
 builder.Services.AddHostedService<AuctionClosingBackgroundService>();
+builder.Services.AddHostedService<ChatRoomArchivingBackgroundService>();
 
 builder.Services.AddSignalR();
 
@@ -97,6 +99,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<TechGearAuction.API.Hubs.AuctionHub>("/hubs/auction");
+app.MapHub<TechGearAuction.API.Hubs.ChatHub>("/hubs/chat");
 
 using (var scope = app.Services.CreateScope())
 {

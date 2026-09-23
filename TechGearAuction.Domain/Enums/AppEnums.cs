@@ -7,3 +7,4 @@ public enum ReportStatus { Pending, Investigating, Resolved, Dismissed }
 public enum AppealStatus { Pending, Approved, Rejected }
 public enum MediaType { Image, Video }
 public enum UserRole { User, Moderator, Admin }
+public enum ChatRoomStatus { Active, Archived }

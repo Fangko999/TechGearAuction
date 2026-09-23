@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TechGearAuction.Application.Interfaces;
+using TechGearAuction.Domain.Entities;
 using TechGearAuction.Domain.Enums;
 
 namespace TechGearAuction.Infrastructure.Services;
@@ -57,6 +58,15 @@ public class AuctionClosingBackgroundService : BackgroundService
                 auction.Status = AuctionStatus.Completed;
                 _logger.LogInformation("Auction {AuctionId} ended. Winner: {WinnerId}, Final Price: {FinalPrice}", auction.Id, highestBid.BidderId, auction.CurrentPrice);
                 
+                // Create ChatRoom for Winner and Seller
+                var chatRoom = new ChatRoom
+                {
+                    AuctionId = auction.Id,
+                    Status = ChatRoomStatus.Active,
+                    ExpiresAt = DateTime.UtcNow.AddDays(30)
+                };
+                context.ChatRooms.Add(chatRoom);
+
                 // Get winner name for notification
                 var winner = await context.Users.FindAsync(new object[] { highestBid.BidderId }, stoppingToken);
                 await notificationService.NotifyAuctionEndedAsync(auction.Id, winner?.DisplayName ?? "Anonymous", auction.CurrentPrice);
