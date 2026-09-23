@@ -82,6 +82,50 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
 
         _context.Bids.Add(bid);
 
+        // --- Anti-Spam Heuristic Logging (Module 5) ---
+        var seller = await _context.Users.FirstOrDefaultAsync(u => u.Id == auction.SellerId, cancellationToken);
+        bool matchSellerIp = !string.IsNullOrEmpty(request.IpAddress) && seller?.LastLoginIp == request.IpAddress;
+        bool matchSellerDevice = !string.IsNullOrEmpty(request.DeviceHash) && seller?.LastLoginDeviceHash == request.DeviceHash;
+
+        if (matchSellerIp || matchSellerDevice)
+        {
+            var matchField = matchSellerIp && matchSellerDevice ? "IP and Device" : (matchSellerIp ? "IP Address" : "Device Hash");
+            _context.SuspiciousActivities.Add(new SuspiciousActivity
+            {
+                AuctionId = request.AuctionId,
+                BidderId = bidderId,
+                SellerId = auction.SellerId,
+                IpAddress = request.IpAddress,
+                DeviceHash = request.DeviceHash,
+                Reason = $"Bidder {matchField} matches Seller."
+            });
+        }
+        else
+        {
+            var matchingOtherBidder = await _context.Bids
+                .Where(b => b.AuctionId == request.AuctionId && b.BidderId != bidderId && !b.IsCanceled &&
+                            (b.IpAddress == request.IpAddress || b.DeviceHash == request.DeviceHash))
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (matchingOtherBidder != null)
+            {
+                var matchField = (matchingOtherBidder.IpAddress == request.IpAddress && matchingOtherBidder.DeviceHash == request.DeviceHash) 
+                    ? "IP and Device" 
+                    : (matchingOtherBidder.IpAddress == request.IpAddress ? "IP Address" : "Device Hash");
+
+                _context.SuspiciousActivities.Add(new SuspiciousActivity
+                {
+                    AuctionId = request.AuctionId,
+                    BidderId = bidderId,
+                    SellerId = auction.SellerId,
+                    IpAddress = request.IpAddress,
+                    DeviceHash = request.DeviceHash,
+                    Reason = $"Bidder {matchField} matches another Bidder ({matchingOtherBidder.BidderId})."
+                });
+            }
+        }
+        // ----------------------------------------------
+
         // Update auction price
         auction.CurrentPrice = request.BidAmount;
 

@@ -21,6 +21,72 @@ public class PlaceBidTests : IDisposable
     }
 
     [Fact]
+    public async Task PlaceBid_WithSameDeviceHashAsAnotherBidder_ShouldLogSuspiciousActivity()
+    {
+        // Add a bid from Admin with DeviceHash = "SpamDevice"
+        using (var setupCtx = _factory.CreateContext())
+        {
+            setupCtx.Bids.Add(new TechGearAuction.Domain.Entities.Bid
+            {
+                AuctionId = TestDbFactory.ActiveAuctionId,
+                BidderId = TestDbFactory.AdminId, // someone else
+                BidAmount = 15,
+                IpAddress = "192.168.1.100",
+                DeviceHash = "SpamDevice"
+            });
+            await setupCtx.SaveChangesAsync();
+        }
+
+        var svc = new MockCurrentUserService(TestDbFactory.User2Id);
+        var ctx = _factory.CreateContext();
+        var handler = new PlaceBidCommandHandler(ctx, svc, _notificationMock.Object);
+
+        await handler.Handle(new PlaceBidCommand
+        {
+            AuctionId = TestDbFactory.ActiveAuctionId,
+            BidAmount = 1050, // ActiveAuctionId CurrentPrice is 1000 + 50 increment
+            IpAddress = "10.0.0.1", // different IP
+            DeviceHash = "SpamDevice" // same DeviceHash
+        }, CancellationToken.None);
+
+        using var verifyCtx = _factory.CreateContext();
+        var activity = await verifyCtx.SuspiciousActivities.FirstOrDefaultAsync(a => a.BidderId == TestDbFactory.User2Id);
+        
+        activity.Should().NotBeNull();
+        activity!.Reason.Should().Contain("Device Hash matches another Bidder");
+    }
+
+    [Fact]
+    public async Task PlaceBid_WithSameDeviceHashAsSeller_ShouldLogSuspiciousActivity()
+    {
+        // Update seller with DeviceHash = "SellerDevice"
+        using (var setupCtx = _factory.CreateContext())
+        {
+            var seller = await setupCtx.Users.FindAsync(TestDbFactory.UserId);
+            seller!.LastLoginDeviceHash = "SellerDevice";
+            await setupCtx.SaveChangesAsync();
+        }
+
+        var svc = new MockCurrentUserService(TestDbFactory.User2Id);
+        var ctx = _factory.CreateContext();
+        var handler = new PlaceBidCommandHandler(ctx, svc, _notificationMock.Object);
+
+        await handler.Handle(new PlaceBidCommand
+        {
+            AuctionId = TestDbFactory.ActiveAuctionId,
+            BidAmount = 1050,
+            IpAddress = "10.0.0.1",
+            DeviceHash = "SellerDevice" // match seller
+        }, CancellationToken.None);
+
+        using var verifyCtx = _factory.CreateContext();
+        var activity = await verifyCtx.SuspiciousActivities.FirstOrDefaultAsync(a => a.BidderId == TestDbFactory.User2Id);
+        
+        activity.Should().NotBeNull();
+        activity!.Reason.Should().Contain("Bidder Device Hash matches Seller");
+    }
+
+    [Fact]
     public async Task PlaceBid_OnNotActiveAuction_ShouldThrow()
     {
         Guid draftId = Guid.NewGuid();
