@@ -11,3 +11,4 @@ public class Notification : BaseEntity
     public string? Link { get; set; }
     public User User { get; set; } = null!;
 }
+

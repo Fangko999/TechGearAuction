@@ -49,3 +49,4 @@ public class GetUnreadNotificationsQueryHandler : IRequestHandler<GetUnreadNotif
         }).ToList();
     }
 }
+

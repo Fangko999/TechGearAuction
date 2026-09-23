@@ -23,3 +23,4 @@ public class MetricsController : ControllerBase
         return Ok(result);
     }
 }
+

@@ -64,3 +64,4 @@ public class GetMyReportsQueryHandler : IRequestHandler<GetMyReportsQuery, Paged
         };
     }
 }
+
