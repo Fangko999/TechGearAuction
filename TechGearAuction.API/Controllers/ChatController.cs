@@ -100,8 +100,8 @@ public class ChatController : ControllerBase
         }
     }
 
-    [HttpPost("media")]
-    public async Task<IActionResult> UploadMedia([FromForm] IFormFile file)
+    [HttpPost("{roomId}/media")]
+    public async Task<IActionResult> UploadMedia(Guid roomId, [FromForm] IFormFile file)
     {
         try
         {
@@ -111,6 +111,7 @@ public class ChatController : ControllerBase
             using var stream = file.OpenReadStream();
             var url = await _mediator.Send(new UploadChatMediaCommand 
             { 
+                ChatRoomId = roomId,
                 FileStream = stream,
                 FileName = file.FileName,
                 ContentType = file.ContentType

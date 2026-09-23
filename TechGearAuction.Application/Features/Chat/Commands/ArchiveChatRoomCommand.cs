@@ -47,3 +47,4 @@ public class ArchiveChatRoomCommandHandler : IRequestHandler<ArchiveChatRoomComm
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
+
