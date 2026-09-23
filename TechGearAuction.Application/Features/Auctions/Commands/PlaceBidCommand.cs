@@ -99,6 +99,9 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
                 DeviceHash = request.DeviceHash,
                 Reason = $"Bidder {matchField} matches Seller."
             });
+            
+            if (seller != null) seller.SuspiciousSellerCount++;
+            if (bidder != null) bidder.SuspiciousBidderCount++;
         }
         else
         {
@@ -122,6 +125,9 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
                     DeviceHash = request.DeviceHash,
                     Reason = $"Bidder {matchField} matches another Bidder ({matchingOtherBidder.BidderId})."
                 });
+
+                if (seller != null) seller.SuspiciousSellerCount++;
+                if (bidder != null) bidder.SuspiciousBidderCount++;
             }
         }
         // ----------------------------------------------

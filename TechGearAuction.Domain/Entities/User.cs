@@ -29,6 +29,8 @@ public class User : BaseEntity
     public int TotalAuctionsWon { get; set; } = 0;
     public int ReportedAsSellerCount { get; set; } = 0;
     public int ReportedAsBuyerCount { get; set; } = 0;
+    public int SuspiciousBidderCount { get; set; } = 0;
+    public int SuspiciousSellerCount { get; set; } = 0;
 
     public ICollection<UserSocialLink> SocialLinks { get; set; } = new List<UserSocialLink>();
 }
