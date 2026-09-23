@@ -22,5 +22,12 @@ public class ReportsController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateReport([FromBody] TechGearAuction.Application.Features.Reports.Commands.CreateReportCommand command)
+    {
+        var resultId = await _mediator.Send(command);
+        return Ok(new { Message = "Report created successfully.", ReportId = resultId });
+    }
 }
 

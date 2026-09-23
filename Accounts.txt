@@ -1,0 +1,38 @@
+===================================================
+ TECHGEAR AUCTION - TEST ACCOUNTS (SEEDED DATA)
+===================================================
+
+*** MẬT KHẨU CHUNG CHO TẤT CẢ TÀI KHOẢN LÀ: Password123! ***
+
+1. TÀI KHOẢN ADMIN (Quản trị viên)
+----------------------------------
+- Email: admin@techgear.com
+- Truy cập: Bấm vào Avatar góc phải trên cùng -> Chọn "Admin Control Panel".
+- Tính năng: Xem danh sách đơn tố cáo, xem lịch sử chat ẩn, khoá tài khoản (Ban).
+
+2. TÀI KHOẢN SELLER (Người bán)
+-------------------------------
+- Email 1: seller1@techgear.com (Gear Store VN - Đã bán Balo 5.11 và đang bị khiếu nại)
+- Email 2: seller2@techgear.com (Flashlight Pro - Đang bán Đèn pin Olight)
+- Truy cập: Bấm vào Avatar -> Chọn "Bán hàng (Seller)" để vào Dashboard quản lý.
+
+3. TÀI KHOẢN BUYER (Người mua)
+------------------------------
+- Email 1: buyer1@techgear.com (Nguyễn Văn Mua - Đã mua Balo, đang tạo Đơn tố cáo Seller 1)
+- Email 2: buyer2@techgear.com (Trần Thị Bid - Đang đua giá với Buyer 1)
+- Truy cập: Xem đồ thị thống kê trong Buyer Dashboard hoặc vào mục Nhắn tin.
+
+===================================================
+ CÁC DỊCH VỤ LIÊN QUAN
+===================================================
+1. MinIO Storage (Quản lý Hình ảnh/Video)
+- URL: http://localhost:9001
+- Username: minioadmin
+- Password: minioadmin
+
+2. Database (SQL Server 2022)
+- Server: localhost,1433
+- User ID: sa
+- Password: TechGear@2026!
+- Database: TechGearAuctionDb
+

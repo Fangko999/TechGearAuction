@@ -40,13 +40,6 @@ public class UsersController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("me/blocks")]
-    public async Task<IActionResult> GetMyBlocks()
-    {
-        var result = await _mediator.Send(new TechGearAuction.Application.Features.Users.Queries.GetBlockedUsersQuery());
-        return Ok(result);
-    }
-
     [HttpGet("me")]
     public async Task<IActionResult> GetMyProfile()
     {

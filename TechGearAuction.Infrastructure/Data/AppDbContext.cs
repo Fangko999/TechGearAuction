@@ -34,13 +34,11 @@ public class AppDbContext : DbContext, IAppDbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // 1. Primary Keys & Concurrency
-        modelBuilder.Entity<BannedDevice>().HasKey(bd => bd.DeviceHash);
-        modelBuilder.Entity<Auction>().Property(a => a.RowVersion).IsRowVersion();
+        // Apply configurations from assembly (for User, Auction, Bid, ChatRoom, Report, Appeal)
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-        // 2. Chống Spam & Race Condition (Partial Unique Indexes)
-        modelBuilder.Entity<Bid>()
-            .HasIndex(b => new { b.AuctionId, b.BidAmount }).IsUnique().HasFilter("[DeletedAt] IS NULL");
+        // Remaining Entity Configurations
+        modelBuilder.Entity<BannedDevice>().HasKey(bd => bd.DeviceHash);
 
         modelBuilder.Entity<UserFollow>()
             .HasIndex(uf => new { uf.FollowerId, uf.FolloweeId }).IsUnique().HasFilter("[DeletedAt] IS NULL");
@@ -51,47 +49,9 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<UserBlock>()
             .HasIndex(ub => new { ub.BlockerId, ub.BlockedId }).IsUnique().HasFilter("[DeletedAt] IS NULL");
 
-        // 3. Unique Constraints (1-1 Relationships)
-        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
-
-        modelBuilder.Entity<ChatRoom>()
-            .HasIndex(c => c.AuctionId).IsUnique().HasFilter("[DeletedAt] IS NULL");
-
-        modelBuilder.Entity<Appeal>()
-            .HasIndex(a => a.ReportId).IsUnique().HasFilter("[DeletedAt] IS NULL");
-
-        // 4. Check Constraints & Decimals
-        modelBuilder.Entity<Auction>()
-            .HasCheckConstraint("CK_Auction_BuyNowPrice", "[BuyNowPrice] IS NULL OR [BuyNowPrice] >= [StartPrice]");
-
-        modelBuilder.Entity<Auction>().Property(a => a.StartPrice).HasPrecision(18, 2);
-        modelBuilder.Entity<Auction>().Property(a => a.CurrentPrice).HasPrecision(18, 2);
-        modelBuilder.Entity<Auction>().Property(a => a.BidIncrement).HasPrecision(18, 2);
-        modelBuilder.Entity<Auction>().Property(a => a.BuyNowPrice).HasPrecision(18, 2);
-        modelBuilder.Entity<Bid>().Property(b => b.BidAmount).HasPrecision(18, 2);
-
-        // 5. Cấu hình độ dài chuỗi
-        modelBuilder.Entity<User>().Property(u => u.PasswordHash).HasMaxLength(255);
-
-        // 6. Restrict Cascade Deletes (Tránh lỗi Multiple Cascade Paths trong SQL Server)
         modelBuilder.Entity<Category>()
             .HasOne(c => c.Parent).WithMany(c => c.SubCategories)
             .HasForeignKey(c => c.ParentId).OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Auction>()
-            .HasOne(a => a.Seller).WithMany().HasForeignKey(a => a.SellerId).OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Auction>()
-            .HasOne(a => a.Winner).WithMany().HasForeignKey(a => a.WinnerId).OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Bid>()
-            .HasOne(b => b.Bidder).WithMany().HasForeignKey(b => b.BidderId).OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Report>()
-            .HasOne(r => r.Reporter).WithMany().HasForeignKey(r => r.ReporterId).OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Report>()
-            .HasOne(r => r.ReportedUser).WithMany().HasForeignKey(r => r.ReportedUserId).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<UserFollow>()
             .HasOne(uf => uf.Follower).WithMany().HasForeignKey(uf => uf.FollowerId).OnDelete(DeleteBehavior.Restrict);
@@ -135,27 +95,20 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<ChatMessage>()
             .HasOne(m => m.Sender).WithMany().HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
 
-        // 7. Global Query Filters (Tự động ẩn bản ghi bị xóa mềm)
-        modelBuilder.Entity<User>().HasQueryFilter(e => e.DeletedAt == null);
+        // Global Query Filters
         modelBuilder.Entity<UserSocialLink>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<Category>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<Auction>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<AuctionImage>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<Bid>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<UserFollow>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<AuctionWatch>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<UserBlock>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<ChatRoom>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<ChatMessage>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<Report>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<ReportEvidence>().HasQueryFilter(e => e.DeletedAt == null);
-        modelBuilder.Entity<Appeal>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<AppealEvidence>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<CreditTransaction>().HasQueryFilter(e => e.DeletedAt == null);
         modelBuilder.Entity<SuspiciousActivity>().HasQueryFilter(e => e.DeletedAt == null);
     }
 
-    // 8. Tự động hóa Audit Log & Soft Delete
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())

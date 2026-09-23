@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TechGearAuction.Application.Features.Appeals.Commands;
 
 namespace TechGearAuction.API.Controllers;
@@ -39,21 +40,28 @@ public class AppealsController : ControllerBase
         }
     }
 
+    public class SubmitBanAppealRequestDto
+    {
+        public string Email { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public List<IFormFile> Files { get; set; } = new();
+    }
+
     [HttpPost("banned-users")]
-    public async Task<IActionResult> SubmitBanAppeal([FromForm] string email, [FromForm] string description, [FromForm] List<IFormFile> files)
+    public async Task<IActionResult> SubmitBanAppeal([FromForm] SubmitBanAppealRequestDto request)
     {
         try
         {
             var command = new SubmitBanAppealCommand
             {
-                Email = email,
-                Description = description,
-                Evidences = files.Select(f => new AppealEvidenceDto
+                Email = request.Email,
+                Description = request.Description,
+                Evidences = request.Files?.Select(f => new AppealEvidenceDto
                 {
                     Stream = f.OpenReadStream(),
                     FileName = f.FileName,
                     ContentType = f.ContentType
-                }).ToList()
+                }).ToList() ?? new List<AppealEvidenceDto>()
             };
 
             var id = await _mediator.Send(command);

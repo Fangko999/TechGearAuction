@@ -77,7 +77,7 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ReportId")
+                    b.Property<Guid?>("ReportId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
@@ -317,6 +317,9 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -385,7 +388,13 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("SenderId")
+                    b.Property<string>("MediaUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MessageType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SenderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -414,6 +423,18 @@ namespace TechGearAuction.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsArchivedBySeller")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsArchivedByWinner")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -463,6 +484,45 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.ToTable("CreditTransactions");
                 });
 
+            modelBuilder.Entity("TechGearAuction.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("TechGearAuction.Domain.Entities.Report", b =>
                 {
                     b.Property<Guid>("Id")
@@ -470,6 +530,9 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ChatRoomId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -655,6 +718,12 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("SuspiciousBidderCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SuspiciousSellerCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("TotalAuctionsCreated")
                         .HasColumnType("int");
 
@@ -666,6 +735,9 @@ namespace TechGearAuction.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("ViolationCount")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -819,9 +891,7 @@ namespace TechGearAuction.Infrastructure.Migrations
                 {
                     b.HasOne("TechGearAuction.Domain.Entities.Report", "Report")
                         .WithOne("Appeal")
-                        .HasForeignKey("TechGearAuction.Domain.Entities.Appeal", "ReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TechGearAuction.Domain.Entities.Appeal", "ReportId");
 
                     b.HasOne("TechGearAuction.Domain.Entities.User", "User")
                         .WithMany()
@@ -941,8 +1011,7 @@ namespace TechGearAuction.Infrastructure.Migrations
                     b.HasOne("TechGearAuction.Domain.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ChatRoom");
 
@@ -974,6 +1043,17 @@ namespace TechGearAuction.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Auction");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TechGearAuction.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("TechGearAuction.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

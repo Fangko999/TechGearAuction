@@ -66,6 +66,16 @@ builder.Services.AddHostedService<ChatRoomArchivingBackgroundService>();
 
 builder.Services.AddSignalR();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+        builder.SetIsOriginAllowed(_ => true)
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials());
+});
+
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -94,6 +104,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<TechGearAuction.API.Middlewares.GlobalExceptionMiddleware>();
+
+app.UseCors("AllowAll");
+
 app.UseMiddleware<TechGearAuction.API.Middlewares.DeviceBlacklistMiddleware>();
 
 app.UseAuthentication();
@@ -106,14 +120,23 @@ app.MapHub<TechGearAuction.API.Hubs.ChatHub>("/hubs/chat");
 using (var scope = app.Services.CreateScope())
 {
     var storageService = scope.ServiceProvider.GetRequiredService<IStorageService>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<TechGearAuction.Infrastructure.Data.AppDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
     try
     {
+        // Apply migrations
+        await Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(dbContext.Database);
+        
+        // Seed Data
+        await TechGearAuction.Infrastructure.Data.DataSeeder.SeedDataAsync(dbContext);
+        
+        // Initialize MinIO Buckets
         await storageService.InitializeBucketsAsync();
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while initializing Minio buckets.");
+        logger.LogError(ex, "An error occurred during startup initialization.");
     }
 }
 

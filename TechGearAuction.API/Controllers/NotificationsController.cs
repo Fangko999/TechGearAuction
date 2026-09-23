@@ -22,5 +22,12 @@ public class NotificationsController : ControllerBase
         var result = await _mediator.Send(new TechGearAuction.Application.Features.Notifications.Queries.GetUnreadNotificationsQuery());
         return Ok(result);
     }
+
+    [HttpPut("{id}/read")]
+    public async Task<IActionResult> MarkAsRead(Guid id)
+    {
+        await _mediator.Send(new TechGearAuction.Application.Features.Notifications.Commands.MarkNotificationReadCommand { NotificationId = id });
+        return Ok(new { Message = "Notification marked as read." });
+    }
 }
 

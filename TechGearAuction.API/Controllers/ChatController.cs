@@ -101,7 +101,7 @@ public class ChatController : ControllerBase
     }
 
     [HttpPost("{roomId}/media")]
-    public async Task<IActionResult> UploadMedia(Guid roomId, [FromForm] IFormFile file)
+    public async Task<IActionResult> UploadMedia(Guid roomId, IFormFile file)
     {
         try
         {
