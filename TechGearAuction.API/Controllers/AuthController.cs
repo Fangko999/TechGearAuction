@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using TechGearAuction.Application.DTOs.Auth;
 using TechGearAuction.Application.Interfaces;
 
@@ -23,6 +25,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("LoginPolicy")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
             var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
@@ -56,5 +59,17 @@ public class AuthController : ControllerBase
     {
             await _authService.ResetPasswordAsync(dto);
             return Ok(new { Message = "Password has been reset successfully." });
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public IActionResult Logout([FromServices] ITokenBlacklistService blacklistService)
+    {
+        var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        if (!string.IsNullOrEmpty(token))
+        {
+            blacklistService.BlacklistToken(token);
+        }
+        return Ok(new { Message = "Logged out successfully." });
     }
 }

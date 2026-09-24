@@ -62,7 +62,7 @@ public class GlobalExceptionMiddleware
                 message = exception.Message;
                 break;
             default:
-                message = exception.Message; 
+                message = "An unexpected error occurred. Please try again later.";
                 break;
         }
 

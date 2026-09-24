@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using TechGearAuction.Application.Common.Models;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Infrastructure.Data;
@@ -72,13 +74,28 @@ builder.Services.AddHostedService<ChatRoomArchivingBackgroundService>();
 builder.Services.AddSignalR();
 
 // Add CORS
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "https://techgearauction.vn" };
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
-        builder.SetIsOriginAllowed(_ => true)
+        builder.WithOrigins(allowedOrigins)
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
+});
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<TechGearAuction.Application.Interfaces.ITokenBlacklistService, TechGearAuction.Infrastructure.Services.TokenBlacklistService>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("LoginPolicy", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(5);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
 });
 
 // Configure JWT Authentication
@@ -107,6 +124,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     context.Token = accessToken;
                 }
                 return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                var blacklistService = context.HttpContext.RequestServices.GetRequiredService<TechGearAuction.Application.Interfaces.ITokenBlacklistService>();
+                var token = context.SecurityToken as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+                if (token != null && blacklistService.IsTokenBlacklisted(token.RawData))
+                {
+                    context.Fail("Token has been revoked.");
+                }
+                return Task.CompletedTask;
             }
         };
     });
@@ -122,8 +149,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'");
+    await next();
+});
+
 app.UseMiddleware<TechGearAuction.API.Middlewares.GlobalExceptionMiddleware>();
 
+app.UseRateLimiter();
 app.UseRouting();
 app.UseCors("AllowAll");
 app.UseWebSockets();
