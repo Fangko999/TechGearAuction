@@ -39,7 +39,7 @@ public class GetTrendingAuctionsQueryHandler : IRequestHandler<GetTrendingAuctio
             : new List<Guid>();
 
         var userFollowings = currentUserId != Guid.Empty
-            ? await _context.UserSocialLinks.AsNoTracking().Where(l => l.UserId == currentUserId).Select(l => l.Platform).ToListAsync(cancellationToken) // Note: using Follows, wait
+            ? await _context.UserSocialLinks.AsNoTracking().Where(l => l.UserId == currentUserId && l.Platform != null).Select(l => l.Platform!).ToListAsync(cancellationToken) // Note: using Follows, wait
             : new List<string>(); // Need to fix this to use UserFollows if it exists
 
         var follows = currentUserId != Guid.Empty

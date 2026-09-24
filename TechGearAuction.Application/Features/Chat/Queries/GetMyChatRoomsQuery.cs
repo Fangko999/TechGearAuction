@@ -86,7 +86,7 @@ public class GetMyChatRoomsQueryHandler : IRequestHandler<GetMyChatRoomsQuery, L
                 ExpiresAt = r.ExpiresAt,
                 AuctionThumbnailUrl = thumbnail,
                 OpponentId = opponent!.Id,
-                OpponentName = opponent.DisplayName,
+                OpponentName = opponent.DisplayName ?? string.Empty,
                 OpponentAvatarUrl = opponent.AvatarUrl,
                 UnreadCount = unreadCount,
                 CreatedAt = r.CreatedAt

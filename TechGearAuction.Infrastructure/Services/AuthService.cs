@@ -36,7 +36,7 @@ public class AuthService : IAuthService
 
         var user = new User
         {
-            Email = dto.Email,
+            Email = dto.Email!,
             DisplayName = dto.DisplayName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = UserRole.User,
@@ -61,7 +61,7 @@ public class AuthService : IAuthService
 
         var verificationLink = $"http://localhost:8888/api/auth/verify-email?email={dto.Email}&token={verificationToken}";
         await _emailService.SendEmailAsync(
-            dto.Email, 
+            dto.Email!, 
             "Verify your TechGearAuction account", 
             $"Welcome {dto.DisplayName}! Please verify your email by clicking: {verificationLink}"
         );
