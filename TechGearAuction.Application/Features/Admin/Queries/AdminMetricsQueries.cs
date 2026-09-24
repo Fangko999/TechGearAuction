@@ -28,12 +28,12 @@ public class GetMetricsOverviewQueryHandler : IRequestHandler<GetMetricsOverview
     {
         return new MetricsOverviewDto
         {
-            TotalUsers = await _context.Users.CountAsync(cancellationToken),
-            ActiveAuctions = await _context.Auctions.CountAsync(a => a.Status == AuctionStatus.Active, cancellationToken),
-            TotalRevenue = await _context.Auctions
+            TotalUsers = await _context.Users.AsNoTracking().CountAsync(cancellationToken),
+            ActiveAuctions = await _context.Auctions.AsNoTracking().CountAsync(a => a.Status == AuctionStatus.Active, cancellationToken),
+            TotalRevenue = await _context.Auctions.AsNoTracking()
                 .Where(a => a.Status == AuctionStatus.Completed)
                 .SumAsync(a => a.CurrentPrice, cancellationToken),
-            PendingReports = await _context.Reports.CountAsync(r => r.Status == ReportStatus.Pending, cancellationToken)
+            PendingReports = await _context.Reports.AsNoTracking().CountAsync(r => r.Status == ReportStatus.Pending, cancellationToken)
         };
     }
 }
@@ -62,7 +62,7 @@ public class GetRevenueChartQueryHandler : IRequestHandler<GetRevenueChartQuery,
     {
         var startDate = DateTime.UtcNow.AddDays(-request.Days);
         
-        var completedAuctions = await _context.Auctions
+        var completedAuctions = await _context.Auctions.AsNoTracking()
             .Where(a => a.Status == AuctionStatus.Completed && a.UpdatedAt >= startDate)
             .ToListAsync(cancellationToken);
 

@@ -27,7 +27,7 @@ public class GetMyFollowingQueryHandler : IRequestHandler<GetMyFollowingQuery, P
     {
         var followerId = _currentUserService.UserId;
 
-        var query = _context.UserFollows
+        var query = _context.UserFollows.AsNoTracking()
             .Where(f => f.FollowerId == followerId)
             .Include(f => f.Followee)
                 .ThenInclude(u => u.SocialLinks)

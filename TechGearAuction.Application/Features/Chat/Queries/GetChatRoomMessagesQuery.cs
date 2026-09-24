@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Common.Models;
@@ -28,17 +29,17 @@ public class GetChatRoomMessagesQueryHandler : IRequestHandler<GetChatRoomMessag
     {
         var userId = _currentUserService.UserId;
 
-        var chatRoom = await _context.ChatRooms
+        var chatRoom = await _context.ChatRooms.AsNoTracking()
             .Include(r => r.Auction)
             .FirstOrDefaultAsync(r => r.Id == request.ChatRoomId, cancellationToken);
 
         if (chatRoom == null)
-            throw new Exception("Chat room not found.");
+            throw new NotFoundException("Entity", "Chat room not found.");
 
         if (chatRoom.Auction.SellerId != userId && chatRoom.Auction.WinnerId != userId)
-            throw new Exception("You are not a participant of this chat room.");
+            throw new BusinessRuleException("You are not a participant of this chat room.");
 
-        var query = _context.ChatMessages
+        var query = _context.ChatMessages.AsNoTracking()
             .Include(m => m.Sender)
             .Where(m => m.ChatRoomId == request.ChatRoomId)
             .OrderByDescending(m => m.CreatedAt);

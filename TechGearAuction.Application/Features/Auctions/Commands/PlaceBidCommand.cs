@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -36,16 +37,16 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
             .FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken);
 
         if (auction == null)
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
 
         if (auction.Status != AuctionStatus.Active)
-            throw new Exception("This auction is not currently active.");
+            throw new BusinessRuleException("This auction is not currently active.");
 
         if (auction.EndTime <= DateTime.UtcNow)
-            throw new Exception("This auction has already ended.");
+            throw new BusinessRuleException("This auction has already ended.");
 
         if (auction.SellerId == bidderId)
-            throw new Exception("You cannot bid on your own auction.");
+            throw new BusinessRuleException("You cannot bid on your own auction.");
 
         // Check if user is blocked by seller or vice versa
         var isBlocked = await _context.UserBlocks
@@ -53,7 +54,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
                            (b.BlockerId == bidderId && b.BlockedId == auction.SellerId), cancellationToken);
         if (isBlocked)
         {
-            throw new Exception("You are not allowed to bid on this auction.");
+            throw new ForbiddenException("You are not allowed to bid on this auction.");
         }
 
         var minimumBid = auction.CurrentPrice + auction.BidIncrement;
@@ -68,6 +69,10 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
         }
 
         var bidder = await _context.Users.FirstOrDefaultAsync(u => u.Id == bidderId, cancellationToken);
+        if (bidder != null && bidder.Status == UserStatus.Banned)
+        {
+            throw new BusinessRuleException("Your account has been banned. You cannot place bids.");
+        }
         var bidderName = bidder?.DisplayName ?? "Anonymous";
 
         // Create the bid
@@ -142,7 +147,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand>
         catch (DbUpdateConcurrencyException)
         {
             // Catching concurrency conflict (Race Condition)
-            throw new TechGearAuction.Application.Common.Exceptions.ConcurrencyException("Another user placed a bid at the exact same time. Please refresh and try again with a higher amount.");
+            throw new TechGearAuction.Domain.Exceptions.ConcurrencyException("Another user placed a bid at the exact same time. Please refresh and try again with a higher amount.");
         }
 
         // Notify via SignalR

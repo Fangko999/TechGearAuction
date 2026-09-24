@@ -23,7 +23,7 @@ public class GetTrendingAuctionsQueryHandler : IRequestHandler<GetTrendingAuctio
     {
         var currentUserId = _currentUserService.UserId;
 
-        var auctions = await _context.Auctions
+        var auctions = await _context.Auctions.AsNoTracking()
             .Include(a => a.Category)
             .Include(a => a.Seller)
             .Include(a => a.Images)
@@ -35,15 +35,15 @@ public class GetTrendingAuctionsQueryHandler : IRequestHandler<GetTrendingAuctio
 
         // Fetch user context if logged in
         var userWatchlists = currentUserId != Guid.Empty
-            ? await _context.AuctionWatches.Where(w => w.UserId == currentUserId).Select(w => w.AuctionId).ToListAsync(cancellationToken)
+            ? await _context.AuctionWatches.AsNoTracking().Where(w => w.UserId == currentUserId).Select(w => w.AuctionId).ToListAsync(cancellationToken)
             : new List<Guid>();
 
         var userFollowings = currentUserId != Guid.Empty
-            ? await _context.UserSocialLinks.Where(l => l.UserId == currentUserId).Select(l => l.Platform).ToListAsync(cancellationToken) // Note: using Follows, wait
+            ? await _context.UserSocialLinks.AsNoTracking().Where(l => l.UserId == currentUserId).Select(l => l.Platform).ToListAsync(cancellationToken) // Note: using Follows, wait
             : new List<string>(); // Need to fix this to use UserFollows if it exists
 
         var follows = currentUserId != Guid.Empty
-            ? await _context.UserFollows.Where(f => f.FollowerId == currentUserId).Select(f => f.FolloweeId).ToListAsync(cancellationToken)
+            ? await _context.UserFollows.AsNoTracking().Where(f => f.FollowerId == currentUserId).Select(f => f.FolloweeId).ToListAsync(cancellationToken)
             : new List<Guid>();
 
         return auctions.Select(a => new AuctionDto
@@ -85,7 +85,7 @@ public class GetEndingSoonAuctionsQueryHandler : IRequestHandler<GetEndingSoonAu
         var now = DateTime.UtcNow;
         var next24h = now.AddHours(24);
 
-        var auctions = await _context.Auctions
+        var auctions = await _context.Auctions.AsNoTracking()
             .Include(a => a.Category)
             .Include(a => a.Seller)
             .Include(a => a.Images)
@@ -95,11 +95,11 @@ public class GetEndingSoonAuctionsQueryHandler : IRequestHandler<GetEndingSoonAu
             .ToListAsync(cancellationToken);
 
         var userWatchlists = currentUserId != Guid.Empty
-            ? await _context.AuctionWatches.Where(w => w.UserId == currentUserId).Select(w => w.AuctionId).ToListAsync(cancellationToken)
+            ? await _context.AuctionWatches.AsNoTracking().Where(w => w.UserId == currentUserId).Select(w => w.AuctionId).ToListAsync(cancellationToken)
             : new List<Guid>();
 
         var follows = currentUserId != Guid.Empty
-            ? await _context.UserFollows.Where(f => f.FollowerId == currentUserId).Select(f => f.FolloweeId).ToListAsync(cancellationToken)
+            ? await _context.UserFollows.AsNoTracking().Where(f => f.FollowerId == currentUserId).Select(f => f.FolloweeId).ToListAsync(cancellationToken)
             : new List<Guid>();
 
         return auctions.Select(a => new AuctionDto
@@ -144,7 +144,7 @@ public class GetRecentWinnersQueryHandler : IRequestHandler<GetRecentWinnersQuer
 
     public async Task<List<RecentWinnerDto>> Handle(GetRecentWinnersQuery request, CancellationToken cancellationToken)
     {
-        var auctions = await _context.Auctions
+        var auctions = await _context.Auctions.AsNoTracking()
             .Include(a => a.Winner)
             .Include(a => a.Images)
             .Where(a => a.Status == AuctionStatus.Completed && a.WinnerId != null)

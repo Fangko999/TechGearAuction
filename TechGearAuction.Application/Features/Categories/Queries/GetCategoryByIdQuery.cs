@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.Category;
@@ -21,12 +22,12 @@ public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery,
 
     public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        var category = await _context.Categories
+        var category = await _context.Categories.AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
         if (category == null)
         {
-            throw new Exception("Category not found.");
+            throw new NotFoundException("Entity", "Category not found.");
         }
 
         return new CategoryDto

@@ -1,6 +1,6 @@
 namespace TechGearAuction.Application.DTOs.Chat;
 
-public class ChatRoomDto
+public record ChatRoomDto
 {
     public Guid Id { get; set; }
     public Guid AuctionId { get; set; }
@@ -15,7 +15,7 @@ public class ChatRoomDto
     public DateTime CreatedAt { get; set; }
 }
 
-public class ChatMessageDto
+public record ChatMessageDto
 {
     public Guid Id { get; set; }
     public Guid ChatRoomId { get; set; }
@@ -28,10 +28,11 @@ public class ChatMessageDto
     public DateTime CreatedAt { get; set; }
 }
 
-public class SendMessageDto
+public record SendMessageDto
 {
     public string Content { get; set; } = null!;
     public string MessageType { get; set; } = "Text";
     public string? MediaUrl { get; set; }
 }
+
 

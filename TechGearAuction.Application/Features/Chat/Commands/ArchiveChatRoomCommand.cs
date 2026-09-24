@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -29,7 +30,7 @@ public class ArchiveChatRoomCommandHandler : IRequestHandler<ArchiveChatRoomComm
             .FirstOrDefaultAsync(r => r.Id == request.ChatRoomId, cancellationToken);
 
         if (chatRoom == null)
-            throw new Exception("Chat room not found.");
+            throw new NotFoundException("Entity", "Chat room not found.");
 
         if (chatRoom.Auction.SellerId == userId)
         {
@@ -41,7 +42,7 @@ public class ArchiveChatRoomCommandHandler : IRequestHandler<ArchiveChatRoomComm
         }
         else
         {
-            throw new Exception("You are not a participant of this chat room.");
+            throw new BusinessRuleException("You are not a participant of this chat room.");
         }
 
         await _context.SaveChangesAsync(cancellationToken);

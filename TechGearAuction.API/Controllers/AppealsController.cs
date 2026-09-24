@@ -29,15 +29,8 @@ public class AppealsController : ControllerBase
     public async Task<IActionResult> ResolveAppeal(Guid id, [FromBody] ResolveAppealCommand command)
     {
         if (id != command.AppealId) return BadRequest();
-        try
-        {
             await _mediator.Send(command);
             return Ok(new { Message = "Appeal resolved." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     public class SubmitBanAppealRequestDto
@@ -50,8 +43,6 @@ public class AppealsController : ControllerBase
     [HttpPost("banned-users")]
     public async Task<IActionResult> SubmitBanAppeal([FromForm] SubmitBanAppealRequestDto request)
     {
-        try
-        {
             var command = new SubmitBanAppealCommand
             {
                 Email = request.Email,
@@ -66,11 +57,6 @@ public class AppealsController : ControllerBase
 
             var id = await _mediator.Send(command);
             return Ok(new { Message = "Appeal submitted successfully.", AppealId = id });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }
 

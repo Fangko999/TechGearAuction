@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -35,7 +36,7 @@ public class UpdateDraftAuctionCommandHandler : IRequestHandler<UpdateDraftAucti
 
         if (auction == null)
         {
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
         }
 
         if (auction.SellerId != _currentUserService.UserId)
@@ -45,7 +46,7 @@ public class UpdateDraftAuctionCommandHandler : IRequestHandler<UpdateDraftAucti
 
         if (auction.Status != AuctionStatus.Draft)
         {
-            throw new Exception("Only draft auctions can be edited.");
+            throw new BusinessRuleException("Only draft auctions can be edited.");
         }
 
         if (request.StartPrice < 0) throw new ArgumentException("Start price cannot be negative.");
@@ -66,7 +67,7 @@ public class UpdateDraftAuctionCommandHandler : IRequestHandler<UpdateDraftAucti
         var categoryExists = await _context.Categories.AnyAsync(c => c.Id == request.CategoryId, cancellationToken);
         if (!categoryExists)
         {
-            throw new Exception("Category does not exist.");
+            throw new BusinessRuleException("Category does not exist.");
         }
 
         auction.CategoryId = request.CategoryId;

@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -31,10 +32,10 @@ public class ForceCancelAuctionCommandHandler : IRequestHandler<ForceCancelAucti
             .FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken);
 
         if (auction == null)
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
 
         if (auction.Status == AuctionStatus.Completed || auction.Status == AuctionStatus.Cancelled)
-            throw new Exception("Auction is already ended or cancelled.");
+            throw new BusinessRuleException("Auction is already ended or cancelled.");
 
         // Hoàn tiền nếu Scheduled/Active
         if (auction.Status == AuctionStatus.Scheduled || auction.Status == AuctionStatus.Active)

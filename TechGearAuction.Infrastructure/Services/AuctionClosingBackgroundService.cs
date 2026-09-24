@@ -50,7 +50,7 @@ public class AuctionClosingBackgroundService : BackgroundService
 
         foreach (var auction in endedAuctions)
         {
-            var highestBid = auction.Bids.OrderByDescending(b => b.BidAmount).FirstOrDefault();
+            var highestBid = auction.Bids.Where(b => !b.IsCanceled).OrderByDescending(b => b.BidAmount).FirstOrDefault();
 
             if (highestBid != null)
             {
@@ -84,7 +84,7 @@ public class AuctionClosingBackgroundService : BackgroundService
             else
             {
                 // No bids placed
-                auction.Status = AuctionStatus.Completed; // Or Cancelled/Unsold
+                auction.Status = AuctionStatus.Cancelled; // No bids placed
                 _logger.LogInformation("Auction {AuctionId} ended with no bids.", auction.Id);
                 await notificationService.NotifyAuctionEndedAsync(auction.Id, "No Winner", auction.CurrentPrice);
             }

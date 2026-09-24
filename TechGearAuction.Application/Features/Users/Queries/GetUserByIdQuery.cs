@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.User;
@@ -21,14 +22,14 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserPro
 
     public async Task<UserProfileDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users
+        var user = await _context.Users.AsNoTracking()
             .IgnoreQueryFilters()
             .Include(u => u.SocialLinks)
             .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
 
         if (user == null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         return new UserProfileDto

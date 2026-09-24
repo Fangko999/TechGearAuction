@@ -32,7 +32,7 @@ public class GetUnreadNotificationsQueryHandler : IRequestHandler<GetUnreadNotif
     {
         var currentUserId = _currentUserService.UserId;
 
-        var notifications = await _context.Notifications
+        var notifications = await _context.Notifications.AsNoTracking()
             .Where(n => n.UserId == currentUserId && !n.IsRead)
             .OrderByDescending(n => n.CreatedAt)
             .Take(20)

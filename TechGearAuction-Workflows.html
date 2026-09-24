@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>TechGearAuction – Tài liệu Workflow Toàn bộ Hệ thống</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #1a1a2e; line-height: 1.65; margin: 0; padding: 30px 40px; background: #fff; }
+  h1 { text-align: center; font-size: 28px; border-bottom: 3px solid #0f3460; padding-bottom: 12px; margin-bottom: 6px; color: #0f3460; }
+  .subtitle { text-align: center; color: #555; font-size: 14px; margin-bottom: 30px; }
+  h2 { font-size: 22px; color: #16213e; border-left: 5px solid #e94560; padding-left: 14px; margin-top: 38px; margin-bottom: 12px; page-break-after: avoid; }
+  h3 { font-size: 17px; color: #0f3460; margin-top: 22px; margin-bottom: 8px; page-break-after: avoid; }
+  h4 { font-size: 14px; color: #333; margin-top: 14px; margin-bottom: 6px; }
+  p, li { font-size: 13.5px; }
+  ul, ol { margin: 6px 0 12px 0; padding-left: 22px; }
+  li { margin-bottom: 4px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 18px 0; font-size: 13px; page-break-inside: avoid; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #0f3460; color: #fff; font-weight: 600; }
+  tr:nth-child(even) { background: #f5f7fa; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #fff; }
+  .badge-get { background: #27ae60; }
+  .badge-post { background: #2980b9; }
+  .badge-put { background: #e67e22; }
+  .badge-delete { background: #c0392b; }
+  .badge-bg { background: #8e44ad; }
+  .step-box { background: #f0f4f8; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 18px; margin: 10px 0 16px 0; page-break-inside: avoid; }
+  .step-box ol { margin: 6px 0 0 0; }
+  .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .info { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 10px 14px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .error { background: #f8d7da; border-left: 4px solid #dc3545; padding: 10px 14px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  code { background: #eef; padding: 1px 5px; border-radius: 3px; font-size: 12.5px; font-family: Consolas, monospace; }
+  .toc { background: #f7f9fc; border: 1px solid #d0d7de; border-radius: 8px; padding: 18px 24px; margin: 20px 0 30px 0; }
+  .toc h3 { margin-top: 0; color: #0f3460; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 3px; font-size: 14px; }
+  .toc a { color: #0f3460; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .section-divider { border: 0; border-top: 2px dashed #ccc; margin: 30px 0; }
+  .file-ref { color: #666; font-size: 12px; font-style: italic; }
+  .enum-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .enum-item { background: #e8edf3; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+  @media print {
+    body { padding: 0; }
+    .toc { page-break-after: always; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🔧 TechGearAuction – Tài liệu Workflow</h1>
+<p class="subtitle">Ngày tạo: 24/09/2026 &nbsp;|&nbsp; Phiên bản: Toàn bộ hệ thống Backend + Frontend &nbsp;|&nbsp; Kiến trúc: Clean Architecture (CQRS + MediatR)</p>
+
+<!-- ===== MỤC LỤC ===== -->
+<div class="toc">
+<h3>📋 Mục lục</h3>
+<ol>
+  <li><a href="#wf1">WF-01: Đăng ký tài khoản (Register)</a></li>
+  <li><a href="#wf2">WF-02: Xác thực Email (Verify Email)</a></li>
+  <li><a href="#wf3">WF-03: Đăng nhập (Login) + Anti-Spam Device Check</a></li>
+  <li><a href="#wf4">WF-04: Quên mật khẩu &amp; Đặt lại mật khẩu (Forgot / Reset Password)</a></li>
+  <li><a href="#wf5">WF-05: Vòng đời Phiên đấu giá (Auction Lifecycle)</a></li>
+  <li><a href="#wf6">WF-06: Đặt giá thầu (Place Bid) + Anti-Shill Detection</a></li>
+  <li><a href="#wf7">WF-07: Mua ngay (Buy Now)</a></li>
+  <li><a href="#wf8">WF-08: Quản lý Profile &amp; Credit</a></li>
+  <li><a href="#wf9">WF-09: Tương tác xã hội (Follow / Block / Watch)</a></li>
+  <li><a href="#wf10">WF-10: Chat Realtime (Buyer ↔ Seller)</a></li>
+  <li><a href="#wf11">WF-11: Báo cáo vi phạm (Report) &amp; Xử lý (Resolve)</a></li>
+  <li><a href="#wf12">WF-12: Kháng cáo Banned (Appeal)</a></li>
+  <li><a href="#wf13">WF-13: Quản trị Admin (Users / Auctions / Categories / Metrics)</a></li>
+  <li><a href="#wf14">WF-14: Background Services (Tự động)</a></li>
+  <li><a href="#wf15">WF-15: Thông báo &amp; Realtime (Notifications + SignalR)</a></li>
+</ol>
+</div>
+
+<!-- ================================================================ -->
+<h2 id="wf1">WF-01: Đăng ký tài khoản (Register)</h2>
+<p class="file-ref">📁 AuthController.cs → AuthService.RegisterAsync()</p>
+
+<h3>API Endpoint</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Request Body</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auth/register</code></td><td>Anonymous</td><td><code>RegisterDto { Email, DisplayName, Password }</code></td></tr>
+</table>
+
+<h3>Các bước xử lý (Steps)</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra email đã tồn tại → Nếu trùng: <code>throw Exception("Email already exists")</code></li>
+  <li>Kiểm tra Email ≤ 256 ký tự.</li>
+  <li>Hash password bằng <strong>BCrypt</strong>.</li>
+  <li>Tạo <code>User</code> entity với:
+    <ul>
+      <li>Role = <code>User</code>, Status = <code>Active</code></li>
+      <li>AvailableCredits = <strong>3</strong> (Signup Bonus)</li>
+      <li>IsEmailVerified = <code>false</code></li>
+      <li>EmailVerificationToken = GUID mới, hạn 24h</li>
+    </ul>
+  </li>
+  <li>Tạo <code>CreditTransaction</code> ghi nhận +3 credits "Signup Bonus".</li>
+  <li><code>SaveChangesAsync()</code></li>
+  <li>Gửi email xác thực qua <code>IEmailService</code> chứa link verify.</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra (Checklist)</h3>
+<ul>
+  <li>☐ Password validation (min length, complexity) chưa được kiểm tra ở backend.</li>
+  <li>☐ DisplayName validation (max length, XSS) chưa có.</li>
+  <li>☐ Link verify email hard-code <code>http://localhost:8888</code> → Cần dùng config.</li>
+  <li>☐ Nếu <code>SendEmailAsync</code> fail, user vẫn được tạo nhưng không nhận email → nên wrap trong transaction hoặc retry.</li>
+  <li>☐ Không có rate-limiting cho endpoint register.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf2">WF-02: Xác thực Email (Verify Email)</h2>
+<p class="file-ref">📁 AuthController.cs → AuthService.VerifyEmailAsync()</p>
+
+<h3>API Endpoint</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Query Params</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auth/verify-email</code></td><td>Anonymous</td><td><code>email, token</code></td></tr>
+</table>
+
+<h3>Các bước xử lý</h3>
+<div class="step-box">
+<ol>
+  <li>Tìm User theo <code>email</code>. Không tìm thấy → return <code>false</code>.</li>
+  <li>Nếu đã verify → return <code>true</code> (idempotent).</li>
+  <li>So sánh token + kiểm tra expiry (24h).</li>
+  <li>Set <code>IsEmailVerified = true</code>, xóa token.</li>
+  <li><code>SaveChangesAsync()</code></li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Endpoint dùng <code>POST</code> nhưng verify email thường là <code>GET</code> link (email client click).</li>
+  <li>☐ Token không được hash → nếu DB bị leak, attacker có thể verify bất kỳ email nào.</li>
+  <li>☐ Không có tính năng "Resend verification email".</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf3">WF-03: Đăng nhập (Login) + Anti-Spam Device Check</h2>
+<p class="file-ref">📁 AuthController.cs → AuthService.LoginAsync()</p>
+
+<h3>API Endpoint</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Headers</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auth/login</code></td><td>Anonymous</td><td><code>X-Forwarded-For</code>, <code>X-Device-Hash</code></td></tr>
+</table>
+
+<h3>Các bước xử lý</h3>
+<div class="step-box">
+<ol>
+  <li>Tìm User theo email.</li>
+  <li><strong>Kiểm tra Banned status:</strong>
+    <ul>
+      <li>Nếu user.Status == Banned → throw <code>BannedUserException</code> (kèm reason, violationCount).</li>
+    </ul>
+  </li>
+  <li><strong>Kiểm tra Device Blacklist:</strong>
+    <ul>
+      <li>Tra <code>BannedDevices</code> theo <code>X-Device-Hash</code> → Nếu device bị ban → throw <code>BannedUserException</code>.</li>
+    </ul>
+  </li>
+  <li>Xác thực password qua BCrypt.Verify.</li>
+  <li>Kiểm tra <code>IsEmailVerified</code> = true.</li>
+  <li>Kiểm tra user.Status == Active.</li>
+  <li>Lưu <code>LastLoginIp</code> và <code>LastLoginDeviceHash</code>.</li>
+  <li>Tạo <code>UserDeviceLog</code> (IP, DeviceHash).</li>
+  <li>Generate JWT token qua <code>IJwtProvider</code>.</li>
+  <li>Trả về <code>AuthResponseDto { UserId, Email, DisplayName, Role, Token }</code>.</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Thứ tự check: Banned user check trước credential check → tiết lộ email có tồn tại hay không (thông tin bị lộ).</li>
+  <li>☐ Không có cơ chế lock account sau N lần login thất bại.</li>
+  <li>☐ JWT không có refresh token → user phải login lại khi token hết hạn.</li>
+  <li>☐ Không có logout / token revocation.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf4">WF-04: Quên mật khẩu &amp; Đặt lại mật khẩu</h2>
+<p class="file-ref">📁 AuthController.cs → AuthService.ForgotPasswordAsync() / ResetPasswordAsync()</p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Body / Query</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auth/forgot-password</code></td><td>Anonymous</td><td><code>ForgotPasswordDto { Email }</code></td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auth/reset-password</code></td><td>Anonymous</td><td><code>ResetPasswordDto { Token, NewPassword }</code></td></tr>
+</table>
+
+<h3>Các bước xử lý – Forgot Password</h3>
+<div class="step-box">
+<ol>
+  <li>Tìm user theo email. Nếu không tìm thấy → <strong>silent return</strong> (không quăng lỗi – tránh dò email).</li>
+  <li>Tạo <code>PasswordResetToken</code> (GUID), expiry = 15 phút.</li>
+  <li><code>SaveChangesAsync()</code></li>
+  <li>Gửi email chứa token/link reset.</li>
+</ol>
+</div>
+
+<h3>Các bước xử lý – Reset Password</h3>
+<div class="step-box">
+<ol>
+  <li>Tìm user theo <code>PasswordResetToken</code>.</li>
+  <li>Kiểm tra expiry.</li>
+  <li>Hash mật khẩu mới bằng BCrypt.</li>
+  <li>Xóa token reset.</li>
+  <li><code>SaveChangesAsync()</code></li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Reset link hard-code <code>http://localhost:8888</code>.</li>
+  <li>☐ Password reset token không hash → DB leak sẽ bị compromise.</li>
+  <li>☐ Không có rate-limiting cho forgot-password (abuse gửi nhiều email).</li>
+  <li>☐ NewPassword validation chưa có ở backend.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf5">WF-05: Vòng đời Phiên đấu giá (Auction Lifecycle)</h2>
+<p class="file-ref">📁 AuctionsController.cs → Commands: Create, UpdateDraft, UploadImage, Publish, Cancel</p>
+
+<h3>Trạng thái Auction</h3>
+<div class="enum-list">
+  <span class="enum-item">Draft</span>
+  <span class="enum-item">Scheduled</span>
+  <span class="enum-item">Active</span>
+  <span class="enum-item">Completed</span>
+  <span class="enum-item">Cancelled</span>
+</div>
+
+<h3>State Machine</h3>
+<p><code>Draft</code> → (Publish) → <code>Scheduled</code> hoặc <code>Active</code> → (EndTime hoặc BuyNow) → <code>Completed</code></p>
+<p><code>Draft</code> / <code>Scheduled</code> → (Cancel) → <code>Cancelled</code></p>
+<p><code>Active</code> / <code>Scheduled</code> / <code>Draft</code> → (Admin Force Cancel) → <code>Cancelled</code></p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auctions</code></td><td>Authorized</td><td>Tạo auction mới (Draft)</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/auctions/{id}</code></td><td>Authorized</td><td>Cập nhật Draft</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auctions/{id}/images</code></td><td>Authorized</td><td>Upload hình ảnh (max 10, max 5MB, JPG/PNG/WebP)</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/auctions/{id}/publish</code></td><td>Authorized</td><td>Publish: Draft → Scheduled/Active, trừ 1 credit</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/auctions/{id}/cancel</code></td><td>Authorized</td><td>Hủy: Draft/Scheduled → Cancelled (hoàn credit nếu Scheduled)</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions</code></td><td>Anonymous</td><td>Danh sách auction (search, filter, paging)</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions/{id}</code></td><td>Anonymous</td><td>Chi tiết auction</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions/trending</code></td><td>Anonymous</td><td>Auction trending</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions/ending-soon</code></td><td>Anonymous</td><td>Auction sắp kết thúc</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions/recent-winners</code></td><td>Anonymous</td><td>Người thắng gần đây</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions/feed</code></td><td>Authorized</td><td>Feed từ người đang follow</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/auctions/me</code></td><td>Authorized</td><td>Auction của tôi</td></tr>
+</table>
+
+<h3>Bước 1: Tạo Auction (CreateAuctionCommand)</h3>
+<div class="step-box">
+<ol>
+  <li>Validate: StartPrice ≥ 0, BidIncrement > 0, BuyNowPrice ≥ StartPrice, EndTime > StartTime, Title ≤ 200 chars, Duration ≥ 3h.</li>
+  <li>Kiểm tra Category tồn tại.</li>
+  <li>Tạo Auction với Status = <code>Draft</code>, CurrentPrice = StartPrice.</li>
+  <li>Convert StartTime/EndTime sang UTC.</li>
+  <li><code>SaveChangesAsync()</code></li>
+</ol>
+</div>
+
+<h3>Bước 2: Upload hình ảnh (UploadAuctionImageCommand)</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra auction tồn tại + thuộc về seller hiện tại.</li>
+  <li>Chỉ upload được khi Status = <code>Draft</code> hoặc <code>Scheduled</code>.</li>
+  <li>Max 10 ảnh / auction.</li>
+  <li>Upload lên MinIO bucket "auctions" qua <code>IStorageService</code>.</li>
+  <li>Ảnh đầu tiên tự động set <code>IsPrimary = true</code>.</li>
+</ol>
+</div>
+
+<h3>Bước 3: Publish (PublishAuctionCommand)</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra chủ auction + Status = Draft.</li>
+  <li>Phải có ≥ 1 ảnh.</li>
+  <li>Seller phải có ≥ 1 credit.</li>
+  <li>Trừ 1 credit + tạo <code>CreditTransaction</code> (-1).</li>
+  <li>Tăng <code>TotalAuctionsCreated</code> trên User.</li>
+  <li>Nếu StartTime ≤ now → Status = <code>Active</code>; ngược lại → <code>Scheduled</code>.</li>
+</ol>
+</div>
+
+<h3>Bước 4: Cancel (CancelAuctionCommand)</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra chủ auction.</li>
+  <li><strong>Active auctions KHÔNG thể cancel</strong> (có thể đang có bidders).</li>
+  <li>Chỉ Draft / Scheduled mới cancel được.</li>
+  <li>Nếu Scheduled → <strong>hoàn 1 credit</strong> + tạo CreditTransaction (+1 "Refund").</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Không có logic chuyển Scheduled → Active khi StartTime tới (chỉ background service xử lý EndTime, không xử lý StartTime).</li>
+  <li>☐ Không thể delete ảnh đã upload.</li>
+  <li>☐ Publish validation chỉ kiểm tra Status = Draft, không kiểm tra Scheduled (nếu muốn re-publish).</li>
+  <li>☐ File upload ở controller validate extension nhưng command không re-validate → inconsistency nếu gọi command trực tiếp.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf6">WF-06: Đặt giá thầu (Place Bid) + Anti-Shill Detection</h2>
+<p class="file-ref">📁 AuctionsController.cs → PlaceBidCommand</p>
+
+<h3>API Endpoint</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Headers</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auctions/{id}/bids</code></td><td>Authorized</td><td><code>X-Forwarded-For</code>, <code>X-Device-Hash</code></td></tr>
+</table>
+
+<h3>Các bước xử lý</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra Auction tồn tại + Status = Active + EndTime chưa qua.</li>
+  <li>Seller không được bid trên auction của mình.</li>
+  <li><strong>Block Check:</strong> Kiểm tra UserBlocks giữa bidder ↔ seller (cả 2 chiều).</li>
+  <li>Tính <code>minimumBid = CurrentPrice + BidIncrement</code>. BidAmount phải ≥ minimumBid.</li>
+  <li>BidAmount không được ≥ BuyNowPrice (nếu có) → hướng dẫn dùng Buy Now.</li>
+  <li>Tạo <code>Bid</code> entity (kèm IpAddress, DeviceHash).</li>
+  <li><strong>Anti-Shill Detection (Module 5):</strong>
+    <ul>
+      <li><strong>Check 1:</strong> So sánh IP/DeviceHash của bidder với <code>LastLoginIp</code>/<code>LastLoginDeviceHash</code> của seller → Nếu match: tạo <code>SuspiciousActivity</code>, tăng <code>SuspiciousSellerCount</code> &amp; <code>SuspiciousBidderCount</code>.</li>
+      <li><strong>Check 2:</strong> So sánh với IP/DeviceHash của các bidder khác trên cùng auction → Nếu match: tạo <code>SuspiciousActivity</code>.</li>
+    </ul>
+  </li>
+  <li>Cập nhật <code>auction.CurrentPrice = BidAmount</code>.</li>
+  <li><code>SaveChangesAsync()</code> với <strong>Optimistic Concurrency Control</strong> (RowVersion) → Nếu conflict: throw <code>ConcurrencyException</code>.</li>
+  <li>Gửi SignalR notification: <code>NotifyNewBidAsync</code> + <code>NotifyPriceUpdateAsync</code>.</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Anti-shill chỉ GHI LOG, không CHẶN bid → attacker vẫn thao túng được giá cho đến khi admin review.</li>
+  <li>☐ Không có giới hạn số lần bid liên tục (spam bid).</li>
+  <li>☐ Không kiểm tra bidder có bị Banned hay không trước khi cho bid.</li>
+  <li>☐ BuyNowPrice check dùng <code>>=</code> → bid bằng đúng BuyNowPrice - BidIncrement vẫn hợp lệ nhưng không trigger buy now.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf7">WF-07: Mua ngay (Buy Now)</h2>
+<p class="file-ref">📁 AuctionsController.cs → BuyNowCommand</p>
+
+<h3>API Endpoint</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auctions/{id}/buy-now</code></td><td>Authorized</td></tr>
+</table>
+
+<h3>Các bước xử lý</h3>
+<div class="step-box">
+<ol>
+  <li>Validate: Auction tồn tại, Active, chưa hết hạn, có BuyNowPrice.</li>
+  <li>Seller không được mua auction của mình.</li>
+  <li>Block Check giữa buyer ↔ seller.</li>
+  <li>Tạo Bid với giá = BuyNowPrice.</li>
+  <li>Set <code>auction.Status = Completed</code>, <code>auction.WinnerId = bidderId</code>.</li>
+  <li><strong>Tạo ChatRoom</strong> (Active, expires 30 ngày) + SystemMessage "Phòng chat tự động khởi tạo".</li>
+  <li><code>SaveChangesAsync()</code> với OCC.</li>
+  <li>Gửi <code>NotifyAuctionEndedAsync</code> qua SignalR.</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Không chạy Anti-Shill detection cho Buy Now (khác với Place Bid).</li>
+  <li>☐ Không kiểm tra buyer có bị Banned không.</li>
+  <li>☐ Các bid trước đó của người khác bị mất quyền lợi mà không được notify riêng.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf8">WF-08: Quản lý Profile &amp; Credit</h2>
+<p class="file-ref">📁 UsersController.cs → UpdateMyProfile, ChangePassword, UpdateAvatar, DepositCredit</p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me</code></td><td>Lấy profile cá nhân</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/users/me</code></td><td>Cập nhật DisplayName, PhoneNumber, SocialLinks</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/users/me/change-password</code></td><td>Đổi mật khẩu</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/users/me/avatar</code></td><td>Upload avatar (max 5MB, JPEG/PNG/WebP)</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/users/me/credits/deposit</code></td><td>Nạp credit</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/credits/history</code></td><td>Xem lịch sử credit</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/{id}/public-profile</code></td><td>Xem public profile (Anonymous)</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/metrics/seller/overview</code></td><td>Dashboard seller</td></tr>
+</table>
+
+<h3>Deposit Credit Flow</h3>
+<div class="step-box">
+<ol>
+  <li>Validate: Amount > 0.</li>
+  <li>Tìm user hiện tại.</li>
+  <li>Cộng credit: <code>user.AvailableCredits += amount</code>.</li>
+  <li>Tạo CreditTransaction (+amount, "Nạp Credit hệ thống").</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ <strong>Deposit Credit không có payment gateway</strong> → user nạp bao nhiêu credit cũng được, không kiểm tra thanh toán thực tế.</li>
+  <li>☐ Update Profile: replace toàn bộ SocialLinks (xóa hết rồi thêm mới) → nếu request thiếu link cũ sẽ bị mất.</li>
+  <li>☐ ChangePassword command: không thấy check Old Password trong code đọc được.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf9">WF-09: Tương tác xã hội (Follow / Block / Watch)</h2>
+<p class="file-ref">📁 UsersController.cs → ToggleFollow, ToggleBlock | AuctionsController.cs → ToggleWatch</p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/users/{id}/follow</code></td><td>Toggle follow/unfollow</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/users/{id}/block</code></td><td>Toggle block/unblock</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auctions/{id}/watch</code></td><td>Toggle watch/unwatch auction</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/following</code></td><td>Danh sách đang follow</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/blocked</code></td><td>Danh sách đã block</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/watchlist</code></td><td>Watchlist</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/watchlists/ending-soon</code></td><td>Watchlist sắp hết hạn</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/bids/active</code></td><td>Bid đang active</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users/me/auctions/won</code></td><td>Auction đã thắng</td></tr>
+</table>
+
+<h3>Block User – Workflow đặc biệt</h3>
+<div class="step-box">
+<ol>
+  <li>Không được tự block mình.</li>
+  <li>Tạo <code>UserBlock</code> record.</li>
+  <li><strong>Tự động xóa Follow 2 chiều</strong> giữa blocker ↔ blocked.</li>
+  <li><strong>Rollback giá Auction:</strong> Duyệt tất cả Active auctions của blocker → Nếu blocked user đang là Top Bidder:
+    <ul>
+      <li>Cancel TẤT CẢ bids của blocked user trên auction đó (<code>IsCanceled = true</code>).</li>
+      <li>Tính lại <code>CurrentPrice</code> = highest valid bid còn lại, hoặc <code>StartPrice</code> nếu không còn bid.</li>
+      <li>Gửi <code>NotifyPriceUpdateAsync</code> qua SignalR.</li>
+    </ul>
+  </li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Block chỉ rollback auctions của BLOCKER, không rollback auctions của BLOCKED → nếu blocker đang bid trên auction của blocked, bid đó vẫn tồn tại.</li>
+  <li>☐ Watch: Seller không được watch auction của mình (đã validate), nhưng không kiểm tra user bị block bởi seller.</li>
+  <li>☐ Unblock không khôi phục lại bids đã cancel → mất vĩnh viễn.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf10">WF-10: Chat Realtime (Buyer ↔ Seller)</h2>
+<p class="file-ref">📁 ChatController.cs → SendMessage, MarkAsRead, Archive, UploadMedia | ChatHub.cs</p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/chat</code></td><td>Danh sách phòng chat (filter: role, folder)</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/chat/{roomId}/messages</code></td><td>Tin nhắn (paging)</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/chat/{roomId}/messages</code></td><td>Gửi tin nhắn</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/chat/{roomId}/messages/read</code></td><td>Đánh dấu đã đọc</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/chat/{roomId}/archive</code></td><td>Archive phòng chat</td></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/chat/{roomId}/media</code></td><td>Upload media (image/video)</td></tr>
+</table>
+
+<h3>ChatRoom tạo tự động khi</h3>
+<ul>
+  <li>Auction kết thúc có winner (Background Service).</li>
+  <li>Buy Now thành công (BuyNowCommand).</li>
+</ul>
+
+<h3>Send Message Flow</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra ChatRoom tồn tại + không Archived.</li>
+  <li>Chỉ seller hoặc winner mới được gửi tin.</li>
+  <li><strong>Block Check:</strong> Nếu 1 trong 2 bên block → không gửi được.</li>
+  <li>Parse MessageType (Text, Image, Video, SystemText).</li>
+  <li><strong>Auto-unarchive:</strong> Nếu seller gửi → bỏ archive phía winner; ngược lại.</li>
+  <li>Lưu <code>ChatMessage</code>, IsRead = false.</li>
+  <li>Gửi realtime qua <code>IChatNotificationService.NotifyNewMessageAsync</code> (SignalR).</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Upload media không có file size limit ở command (chỉ có ở controller cho auction images, không có cho chat media).</li>
+  <li>☐ Không có rate-limiting cho send message (spam).</li>
+  <li>☐ MarkAsRead gửi SignalR notification cho TỪNG message → nhiều message = nhiều call SignalR → nên batch.</li>
+  <li>☐ ChatRoom chỉ dành cho 1:1 (seller ↔ winner), không hỗ trợ group.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf11">WF-11: Báo cáo vi phạm (Report) &amp; Xử lý</h2>
+<p class="file-ref">📁 ReportsController.cs / AdminReportsController.cs → CreateReport, ResolveReport</p>
+
+<h3>Report Types</h3>
+<div class="enum-list">
+  <span class="enum-item">Flake</span>
+  <span class="enum-item">Scam</span>
+  <span class="enum-item">Harassment</span>
+</div>
+
+<h3>Report Status Flow</h3>
+<div class="enum-list">
+  <span class="enum-item">Pending</span>
+  <span class="enum-item">→ Resolved / Rejected</span>
+</div>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/reports</code></td><td>User</td><td>Tạo report</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/reports/my-reports</code></td><td>User</td><td>Report của tôi</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/reports</code></td><td>Admin</td><td>Tất cả reports</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/reports/{id}</code></td><td>Admin</td><td>Chi tiết report</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/reports/{id}/resolve</code></td><td>Admin</td><td>Xử lý report</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/reports/{id}/chat-history</code></td><td>Admin</td><td>Xem chat history liên quan</td></tr>
+</table>
+
+<h3>Create Report Flow</h3>
+<div class="step-box">
+<ol>
+  <li>Không được tự report mình.</li>
+  <li>Kiểm tra reported user, auction (nếu có), chat room (nếu có) đều tồn tại.</li>
+  <li>Tạo Report với Status = Pending.</li>
+</ol>
+</div>
+
+<h3>Resolve Report Flow (Admin)</h3>
+<div class="step-box">
+<ol>
+  <li>Admin chọn 1 trong 3 hành động:
+    <ul>
+      <li><strong>Reject:</strong> Status → Rejected. Không ảnh hưởng user.</li>
+      <li><strong>IssueStrike:</strong> Status → Resolved. <code>ViolationCount++</code>. Nếu ≥ 5 → <strong>AUTO-BAN</strong> + blacklist device.</li>
+      <li><strong>DirectBan:</strong> Status → Resolved. Ban user ngay + blacklist device.</li>
+    </ul>
+  </li>
+  <li>Tạo <code>AdminAuditLog</code>.</li>
+</ol>
+</div>
+
+<div class="warning">
+⚠️ <strong>Cảnh báo:</strong> Khi Auto-ban (5 strikes), ban logic thực hiện trong method riêng nhưng <strong>không tạo AdminAuditLog riêng cho hành động ban</strong> → khó truy vết.
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Không có trạng thái "Investigating" trong flow (enum có nhưng không dùng).</li>
+  <li>☐ User có thể report cùng 1 người nhiều lần → spam report.</li>
+  <li>☐ Không notify user bị report hoặc user report khi có kết quả.</li>
+  <li>☐ ReportStatus enum có <code>Dismissed</code> nhưng chưa có flow sử dụng.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf12">WF-12: Kháng cáo Banned (Appeal)</h2>
+<p class="file-ref">📁 AppealsController.cs → SubmitBanAppeal, ResolveAppeal</p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Auth</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/appeals/banned-users</code></td><td>Anonymous (banned user gửi)</td><td>Gửi kháng cáo kèm bằng chứng</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/appeals</code></td><td>Admin</td><td>Danh sách appeals</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/appeals/{id}/resolve</code></td><td>Admin</td><td>Duyệt / Từ chối appeal</td></tr>
+</table>
+
+<h3>Submit Ban Appeal Flow</h3>
+<div class="step-box">
+<ol>
+  <li>Tìm user bằng email (Anonymous endpoint – user đã bị ban không login được).</li>
+  <li>Kiểm tra user.Status == Banned (nếu không bị ban → throw).</li>
+  <li>Upload evidence files lên MinIO (images → bucket "images", khác → "chat-media").</li>
+  <li>Tạo <code>Appeal</code> với Status = Pending + các <code>AppealEvidence</code>.</li>
+</ol>
+</div>
+
+<h3>Resolve Appeal Flow (Admin)</h3>
+<div class="step-box">
+<ol>
+  <li>Nếu <strong>Approve:</strong>
+    <ul>
+      <li>User.Status → Active.</li>
+      <li>Xóa device khỏi BannedDevices.</li>
+      <li>Nếu ViolationCount ≥ 5 → giảm xuống 4 (tránh auto-ban lại ngay).</li>
+    </ul>
+  </li>
+  <li>Nếu <strong>Reject:</strong> Appeal.Status → Rejected. User vẫn bị ban.</li>
+  <li>Tạo <code>AdminAuditLog</code>.</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Banned user có thể gửi nhiều appeal cùng lúc (không giới hạn).</li>
+  <li>☐ Evidence bucket routing: video file sẽ vào "chat-media" thay vì bucket riêng → lẫn với media chat.</li>
+  <li>☐ Approve chỉ giảm ViolationCount xuống 4 → nếu nhận thêm 1 strike sẽ bị ban lại ngay.</li>
+  <li>☐ Không notify user khi appeal được resolve.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf13">WF-13: Quản trị Admin</h2>
+<p class="file-ref">📁 AdminUsersController, AdminAuctionsController, AdminCategoriesController, AdminMetricsController, AdminBlacklistsController, AdminAuditLogsController, AdminSuspiciousActivitiesController</p>
+
+<h3>Admin User Management</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/users</code></td><td>Danh sách users (search, filter, paging)</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/users/{id}</code></td><td>Chi tiết user</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/users/{id}</code></td><td>Cập nhật profile user</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/users/{id}/close</code></td><td>Đóng tài khoản (Closed + DeletedAt)</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/users/{id}/restore</code></td><td>Khôi phục tài khoản</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/users/{id}/ban</code></td><td>Ban user + blacklist device</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/users/{id}/unban</code></td><td>Unban user</td></tr>
+</table>
+
+<h3>Admin Auction Management</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/auctions</code></td><td>Tất cả auctions</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/auctions/{id}/force-cancel</code></td><td>Hủy cưỡng chế bất kỳ auction nào (trừ Completed/Cancelled)</td></tr>
+</table>
+
+<h3>Force Cancel Flow</h3>
+<div class="step-box">
+<ol>
+  <li>Kiểm tra auction không phải Completed/Cancelled.</li>
+  <li>Nếu Scheduled hoặc Active → hoàn 1 credit cho seller.</li>
+  <li>Set Status = Cancelled.</li>
+  <li>Tạo AdminAuditLog.</li>
+  <li>Gửi SignalR notification "No Winner (Cancelled by Admin)".</li>
+</ol>
+</div>
+
+<h3>Admin Category Management</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-post">POST</span></td><td><code>/api/admin/categories</code></td><td>Tạo category</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/categories/{id}</code></td><td>Cập nhật category</td></tr>
+<tr><td><span class="badge badge-delete">DELETE</span></td><td><code>/api/admin/categories/{id}</code></td><td>Xóa category</td></tr>
+</table>
+
+<h3>Admin Monitoring</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/metrics/overview</code></td><td>Tổng quan hệ thống</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/metrics/revenue-chart</code></td><td>Biểu đồ doanh thu</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/blacklists</code></td><td>Danh sách device bị blacklist</td></tr>
+<tr><td><span class="badge badge-delete">DELETE</span></td><td><code>/api/admin/blacklists/{hash}</code></td><td>Xóa device khỏi blacklist</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/audit-logs</code></td><td>Nhật ký thao tác admin</td></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/admin/suspicious-activities</code></td><td>Hoạt động nghi vấn</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/admin/suspicious-activities/{id}/review</code></td><td>Đánh dấu đã review</td></tr>
+</table>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Ban user: Blacklist device nhưng <strong>Unban user KHÔNG xóa device khỏi blacklist</strong> → device vẫn bị chặn dù user được unban.</li>
+  <li>☐ Close account: Set DeletedAt nhưng không có soft-delete logic ở query (user vẫn hiện trong danh sách).</li>
+  <li>☐ Delete category: Không kiểm tra xem có auction nào đang dùng category đó → FK violation tiềm ẩn.</li>
+  <li>☐ Force Cancel: Không cancel các bids đang chạy → bidders không nhận thông báo phù hợp.</li>
+  <li>☐ Admin update profile: Tạo AuditLog nhưng admin update profile user thường KHÔNG nên có → tách rõ admin vs. user action.</li>
+  <li>☐ ReviewSuspiciousActivity chỉ set <code>IsReviewed = true</code> → không có action follow-up.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf14">WF-14: Background Services (Tự động)</h2>
+<p class="file-ref">📁 Infrastructure/Services/AuctionClosingBackgroundService.cs, ChatRoomArchivingBackgroundService.cs</p>
+
+<h3>Service 1: AuctionClosingBackgroundService</h3>
+<table>
+<tr><th>Tần suất</th><th>Chức năng</th></tr>
+<tr><td><span class="badge badge-bg">Mỗi 10 giây</span></td><td>Đóng auction hết hạn</td></tr>
+</table>
+
+<div class="step-box">
+<ol>
+  <li>Query tất cả Auctions: Status = Active AND EndTime ≤ now.</li>
+  <li>Với mỗi auction:
+    <ul>
+      <li><strong>Có bid:</strong> WinnerId = highest bidder, Status = Completed. Tạo ChatRoom (30 ngày) + SystemMessage. Gửi SignalR notification.</li>
+      <li><strong>Không có bid:</strong> Status = Completed (dù không có winner).</li>
+    </ul>
+  </li>
+  <li>Batch <code>SaveChangesAsync()</code> cho tất cả auctions.</li>
+</ol>
+</div>
+
+<div class="error">
+🔴 <strong>Lỗi tiềm ẩn:</strong> Auction không có bid vẫn set Status = <code>Completed</code> thay vì <code>Cancelled</code> hoặc trạng thái riêng "Unsold" → gây nhầm lẫn khi query. Comment trong code ghi "Or Cancelled/Unsold" nhưng code thực tế set Completed.
+</div>
+
+<h3>Service 2: ChatRoomArchivingBackgroundService</h3>
+<table>
+<tr><th>Tần suất</th><th>Chức năng</th></tr>
+<tr><td><span class="badge badge-bg">Mỗi 1 giờ</span></td><td>Archive chat room hết hạn</td></tr>
+</table>
+
+<div class="step-box">
+<ol>
+  <li>Query ChatRooms: Status = Active AND ExpiresAt ≤ now.</li>
+  <li>Set Status = Archived cho tất cả.</li>
+</ol>
+</div>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ <strong>Không có service chuyển Scheduled → Active</strong> khi StartTime tới → auction Scheduled vĩnh viễn không chuyển Active nếu Publish trước StartTime.</li>
+  <li>☐ Auction closing query không lọc bids có <code>IsCanceled = true</code> → winner có thể là bidder đã bị cancel.</li>
+  <li>☐ Background service batch save: Nếu 1 auction lỗi, toàn bộ batch rollback.</li>
+  <li>☐ Polling 10s cho auction closing có thể gây tải DB nếu có nhiều auction.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="wf15">WF-15: Thông báo &amp; Realtime (Notifications + SignalR)</h2>
+<p class="file-ref">📁 NotificationsController.cs, AuctionHub.cs, ChatHub.cs</p>
+
+<h3>API Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Route</th><th>Mô tả</th></tr>
+<tr><td><span class="badge badge-get">GET</span></td><td><code>/api/notifications/unread</code></td><td>Lấy thông báo chưa đọc</td></tr>
+<tr><td><span class="badge badge-put">PUT</span></td><td><code>/api/notifications/{id}/read</code></td><td>Đánh dấu đã đọc</td></tr>
+</table>
+
+<h3>SignalR Hubs</h3>
+<table>
+<tr><th>Hub</th><th>Events phát ra</th></tr>
+<tr><td><code>/hubs/auction</code></td><td>NewBid, PriceUpdate, AuctionEnded</td></tr>
+<tr><td><code>/hubs/chat</code></td><td>NewMessage, MessageRead</td></tr>
+</table>
+
+<h3>Khi nào hệ thống gửi realtime?</h3>
+<ul>
+  <li><strong>PlaceBid:</strong> NotifyNewBidAsync + NotifyPriceUpdateAsync → AuctionHub</li>
+  <li><strong>BuyNow:</strong> NotifyAuctionEndedAsync → AuctionHub</li>
+  <li><strong>AuctionClosingService:</strong> NotifyAuctionEndedAsync → AuctionHub</li>
+  <li><strong>BlockUser (cancel bid):</strong> NotifyPriceUpdateAsync → AuctionHub</li>
+  <li><strong>ForceCancelAuction:</strong> NotifyAuctionEndedAsync → AuctionHub</li>
+  <li><strong>SendMessage:</strong> NotifyNewMessageAsync → ChatHub</li>
+  <li><strong>MarkAsRead:</strong> NotifyMessageReadAsync → ChatHub</li>
+</ul>
+
+<h3>Điểm cần kiểm tra</h3>
+<ul>
+  <li>☐ Notification entity (persisted) chỉ có endpoint đọc → không có logic tạo notification trong code command → chỉ dùng SignalR (volatile), không persist.</li>
+  <li>☐ Nếu user offline, notification SignalR bị mất → cần message queue hoặc persistent notification.</li>
+  <li>☐ AuctionHub và ChatHub rất mỏng (< 10 dòng) → logic realtime nằm trong service, hub chỉ expose.</li>
+</ul>
+
+<!-- ================================================================ -->
+<hr class="section-divider">
+
+<h2 style="page-break-before: always;">📊 Tổng hợp: Bản đồ API Endpoints</h2>
+
+<table>
+<tr><th>#</th><th>Module</th><th>GET</th><th>POST</th><th>PUT</th><th>DELETE</th><th>Tổng</th></tr>
+<tr><td>1</td><td>Auth</td><td>0</td><td>4</td><td>0</td><td>0</td><td>4</td></tr>
+<tr><td>2</td><td>Auctions</td><td>8</td><td>4</td><td>3</td><td>0</td><td>15</td></tr>
+<tr><td>3</td><td>Users / Profile</td><td>8</td><td>3</td><td>2</td><td>0</td><td>13</td></tr>
+<tr><td>4</td><td>Chat</td><td>2</td><td>2</td><td>2</td><td>0</td><td>6</td></tr>
+<tr><td>5</td><td>Reports</td><td>1</td><td>1</td><td>0</td><td>0</td><td>2</td></tr>
+<tr><td>6</td><td>Notifications</td><td>1</td><td>0</td><td>1</td><td>0</td><td>2</td></tr>
+<tr><td>7</td><td>Categories (Public)</td><td>2</td><td>0</td><td>0</td><td>0</td><td>2</td></tr>
+<tr><td>8</td><td>Metrics (Seller)</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>9</td><td>Admin Users</td><td>2</td><td>0</td><td>5</td><td>0</td><td>7</td></tr>
+<tr><td>10</td><td>Admin Auctions</td><td>1</td><td>0</td><td>1</td><td>0</td><td>2</td></tr>
+<tr><td>11</td><td>Admin Reports</td><td>3</td><td>0</td><td>1</td><td>0</td><td>4</td></tr>
+<tr><td>12</td><td>Admin Categories</td><td>0</td><td>1</td><td>1</td><td>1</td><td>3</td></tr>
+<tr><td>13</td><td>Admin Metrics</td><td>2</td><td>0</td><td>0</td><td>0</td><td>2</td></tr>
+<tr><td>14</td><td>Admin Blacklists</td><td>1</td><td>0</td><td>0</td><td>1</td><td>2</td></tr>
+<tr><td>15</td><td>Admin Audit Logs</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>16</td><td>Admin Suspicious</td><td>1</td><td>0</td><td>1</td><td>0</td><td>2</td></tr>
+<tr><td>17</td><td>Appeals</td><td>1</td><td>1</td><td>1</td><td>0</td><td>3</td></tr>
+<tr style="font-weight:bold; background:#e8edf3;"><td></td><td>TỔNG</td><td>35</td><td>16</td><td>18</td><td>2</td><td>71</td></tr>
+</table>
+
+<h2>📋 Domain Entities Tổng hợp (22 entities)</h2>
+<table>
+<tr><th>Entity</th><th>Mô tả</th></tr>
+<tr><td>User</td><td>Tài khoản (email, credits, role, status, violation tracking)</td></tr>
+<tr><td>Auction</td><td>Phiên đấu giá (lifecycle, pricing, OCC via RowVersion)</td></tr>
+<tr><td>AuctionImage</td><td>Ảnh đính kèm auction (max 10, stored MinIO)</td></tr>
+<tr><td>AuctionWatch</td><td>Watchlist mapping (User ↔ Auction)</td></tr>
+<tr><td>Bid</td><td>Giá thầu (amount, IP, DeviceHash, IsCanceled)</td></tr>
+<tr><td>Category</td><td>Danh mục sản phẩm (hierarchy support)</td></tr>
+<tr><td>ChatRoom</td><td>Phòng chat seller-winner (auto-create, 30d expiry)</td></tr>
+<tr><td>ChatMessage</td><td>Tin nhắn (Text/Image/Video/System, read tracking)</td></tr>
+<tr><td>CreditTransaction</td><td>Lịch sử giao dịch credit (+/−)</td></tr>
+<tr><td>Notification</td><td>Thông báo persisted (chưa tích hợp đầy đủ)</td></tr>
+<tr><td>Report</td><td>Báo cáo vi phạm (Flake/Scam/Harassment)</td></tr>
+<tr><td>ReportEvidence</td><td>Bằng chứng đính kèm report</td></tr>
+<tr><td>Appeal</td><td>Kháng cáo ban (Pending/Approved/Rejected)</td></tr>
+<tr><td>AppealEvidence</td><td>Bằng chứng kháng cáo</td></tr>
+<tr><td>SuspiciousActivity</td><td>Hoạt động nghi vấn shill bid</td></tr>
+<tr><td>BannedDevice</td><td>Device hash bị blacklist</td></tr>
+<tr><td>UserDeviceLog</td><td>Nhật ký đăng nhập device</td></tr>
+<tr><td>UserFollow</td><td>Follow mapping (Follower ↔ Followee)</td></tr>
+<tr><td>UserBlock</td><td>Block mapping (Blocker ↔ Blocked)</td></tr>
+<tr><td>UserSocialLink</td><td>Link mạng xã hội (Platform + URL)</td></tr>
+<tr><td>AdminAuditLog</td><td>Nhật ký thao tác admin</td></tr>
+<tr><td>BaseEntity</td><td>Base class (Id, CreatedAt, UpdatedAt, DeletedAt)</td></tr>
+</table>
+
+<h2>🔴 Tổng hợp Các Vấn đề Cần Kiểm tra (Priority)</h2>
+<table>
+<tr><th>Mức độ</th><th>Mô tả</th><th>Workflow</th></tr>
+<tr><td style="color:red;font-weight:bold;">CRITICAL</td><td>Không có service chuyển Scheduled → Active (auction bị kẹt ở Scheduled)</td><td>WF-05, WF-14</td></tr>
+<tr><td style="color:red;font-weight:bold;">CRITICAL</td><td>AuctionClosing không lọc bids IsCanceled → winner có thể là bidder đã bị cancel</td><td>WF-14</td></tr>
+<tr><td style="color:red;font-weight:bold;">CRITICAL</td><td>Auction no-bid set Completed thay vì Unsold/Cancelled</td><td>WF-14</td></tr>
+<tr><td style="color:red;font-weight:bold;">CRITICAL</td><td>Deposit Credit không có payment verification → unlimited free credits</td><td>WF-08</td></tr>
+<tr><td style="color:orange;font-weight:bold;">HIGH</td><td>Unban user không xóa device khỏi blacklist</td><td>WF-13</td></tr>
+<tr><td style="color:orange;font-weight:bold;">HIGH</td><td>Login check thứ tự: Banned → Credentials → tiết lộ email tồn tại</td><td>WF-03</td></tr>
+<tr><td style="color:orange;font-weight:bold;">HIGH</td><td>Không kiểm tra bidder banned trước khi cho bid</td><td>WF-06, WF-07</td></tr>
+<tr><td style="color:orange;font-weight:bold;">HIGH</td><td>Hard-coded localhost URLs cho email links</td><td>WF-01, WF-04</td></tr>
+<tr><td style="color:orange;font-weight:bold;">HIGH</td><td>Anti-shill chỉ log, không chặn → vẫn thao túng giá được</td><td>WF-06</td></tr>
+<tr><td style="color:orange;font-weight:bold;">HIGH</td><td>Không có JWT refresh token / logout / revocation</td><td>WF-03</td></tr>
+<tr><td style="color:#cc9900;font-weight:bold;">MEDIUM</td><td>Không rate-limiting: register, forgot-password, bid, message</td><td>WF-01, WF-04, WF-06, WF-10</td></tr>
+<tr><td style="color:#cc9900;font-weight:bold;">MEDIUM</td><td>Tokens (email verify, password reset) không hash trong DB</td><td>WF-02, WF-04</td></tr>
+<tr><td style="color:#cc9900;font-weight:bold;">MEDIUM</td><td>Block: không rollback bids của blocker trên auction của blocked</td><td>WF-09</td></tr>
+<tr><td style="color:#cc9900;font-weight:bold;">MEDIUM</td><td>Delete category không check FK → auction mồ côi</td><td>WF-13</td></tr>
+<tr><td style="color:#cc9900;font-weight:bold;">MEDIUM</td><td>Notification entity không tạo ở command → chỉ volatile SignalR</td><td>WF-15</td></tr>
+<tr><td style="color:gray;font-weight:bold;">LOW</td><td>Password/DisplayName validation thiếu ở backend</td><td>WF-01</td></tr>
+<tr><td style="color:gray;font-weight:bold;">LOW</td><td>Chat media upload không limit file size ở command</td><td>WF-10</td></tr>
+<tr><td style="color:gray;font-weight:bold;">LOW</td><td>MarkAsRead gửi N SignalR calls → nên batch</td><td>WF-10</td></tr>
+<tr><td style="color:gray;font-weight:bold;">LOW</td><td>Resend verification email chưa có</td><td>WF-02</td></tr>
+</table>
+
+<br><br>
+<p style="text-align:center; color:#888; font-size: 12px;">— Hết tài liệu — Tạo tự động bởi AI Agent — TechGearAuction Workflow Documentation v1.0 —</p>
+
+</body>
+</html>

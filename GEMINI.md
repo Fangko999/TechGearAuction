@@ -2,7 +2,7 @@
 # TechGearAuction - Global AI Coding Standards
 
 ## 1. Kiến trúc Tổng thể (Clean Architecture)
-- **Tuyệt đối tuân thủ Clean Architecture** cho cả hai phía Backend và Frontend.
+- **Tuyệt đối tuân thủ Clean Architecture** cho phía Backend.
 - **Dependency Rule:** Luồng phụ thuộc chỉ được phép hướng vào trong (về phía Domain). Các lớp bên ngoài (UI, Infrastructure) có thể biết về lớp bên trong, nhưng lớp bên trong tuyệt đối không được tham chiếu ra bên ngoài.
 - **Zero-Trust & Anti-Spam:** Mọi luồng API nhạy cảm phải tính đến ngữ cảnh xác thực (JWT) và cơ chế chặn phần cứng (`X-Device-Hash`).
 
@@ -12,19 +12,10 @@
 - **Tầng Infrastructure:** Nơi duy nhất chứa logic kết nối SQL Server (EF Core), MinIO (Storage), và SignalR Hubs.
 - **Tầng API (Presentation):** Controllers siêu mỏng, chỉ có nhiệm vụ nhận Request, gọi Application Layer và trả về HTTP Responses chuẩn RESTful.
 
-## 3. Tiêu chuẩn Frontend (Next.js 14+ App Router, TypeScript)
-- **Cấu trúc 4 lớp:** `/src/domain`, `/src/infrastructure`, `/src/application`, và `/src/app` (Presentation). Thư mục `app` nằm ngang hàng với `presentation` hoặc đóng vai trò trực tiếp là Presentation Layer.
-- **Tầng Domain (Frontend):** Định nghĩa DTOs, Type, Interface. Cấm import bất kỳ thư viện HTTP hay UI nào.
-- **Tầng Infrastructure:** Quản lý Axios instances, SignalR connections, và Interceptors (tự động đính kèm Bearer Token và DeviceHash).
-- **Tầng Application:** Dùng `zustand` quản lý State, viết Custom Hooks (`useAuctions`, `useAuth`) để bọc logic. Không gọi API trực tiếp trong Component.
-- **Tầng Presentation:** 
-  - Khai báo `"use client";` một cách có chủ đích (chỉ dùng khi có hooks hoặc tương tác UI).
-  - Sử dụng Tailwind CSS hoàn toàn. Không viết CSS inline hoặc file CSS rời nếu không thực sự cần thiết.
-  - Áp dụng **Optimistic UI** cho các tính năng realtime (Chat, Bidding) để giao diện phản hồi ngay lập tức trước khi chờ server xác nhận.
 
 ## 4. Quy ước Đặt tên & Viết Code
 - **C#:** PascalCase cho Class/Method/Property. camelCase cho tham số. `_camelCase` cho private readonly fields.
-- **TypeScript:** PascalCase cho Component/Interface/Type. camelCase cho function/variable/hook.
+
 - **Ngôn ngữ:** Tên biến, hàm, class bắt buộc bằng Tiếng Anh. Chú thích (comments) và UI Text có thể dùng Tiếng Việt.
 - **Bảo mật:** Không bao giờ hard-code connection strings, secret keys, hay MinIO credentials vào mã nguồn. Luôn đọc qua biến môi trường.
 ---

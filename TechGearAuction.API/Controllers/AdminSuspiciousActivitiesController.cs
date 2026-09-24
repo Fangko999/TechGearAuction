@@ -21,29 +21,15 @@ public class AdminSuspiciousActivitiesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetActivities([FromQuery] GetSuspiciousActivitiesQuery query)
     {
-        try
-        {
             var result = await _mediator.Send(query);
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/review")]
     public async Task<IActionResult> ReviewActivity(Guid id)
     {
-        try
-        {
             await _mediator.Send(new ReviewSuspiciousActivityCommand { Id = id });
             return Ok(new { Message = "Activity marked as reviewed." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }
 

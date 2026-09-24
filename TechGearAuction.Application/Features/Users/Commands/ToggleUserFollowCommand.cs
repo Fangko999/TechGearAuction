@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -33,7 +34,7 @@ public class ToggleUserFollowCommandHandler : IRequestHandler<ToggleUserFollowCo
         var followeeExists = await _context.Users.AnyAsync(u => u.Id == request.FolloweeId, cancellationToken);
         if (!followeeExists)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         var existingFollow = await _context.UserFollows

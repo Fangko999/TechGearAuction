@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -35,7 +36,7 @@ public class UploadAuctionImageCommandHandler : IRequestHandler<UploadAuctionIma
 
         if (auction == null)
         {
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
         }
 
         if (auction.SellerId != _currentUserService.UserId)
@@ -45,12 +46,12 @@ public class UploadAuctionImageCommandHandler : IRequestHandler<UploadAuctionIma
 
         if (auction.Status != AuctionStatus.Draft && auction.Status != AuctionStatus.Scheduled)
         {
-            throw new Exception("Cannot upload images to an active or completed auction.");
+            throw new BusinessRuleException("Cannot upload images to an active or completed auction.");
         }
 
         if (auction.Images.Count >= 10)
         {
-            throw new Exception("Maximum of 10 images allowed per auction.");
+            throw new ForbiddenException("Maximum of 10 images allowed per auction.");
         }
 
         var extension = Path.GetExtension(request.FileName);

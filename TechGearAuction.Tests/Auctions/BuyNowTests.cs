@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using TechGearAuction.Application.Common.Exceptions;
+using TechGearAuction.Domain.Exceptions;
 using TechGearAuction.Application.Features.Auctions.Commands;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Domain.Enums;

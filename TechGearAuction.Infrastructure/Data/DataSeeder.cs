@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -21,18 +21,19 @@ public static class DataSeeder
         // 2. Seed Users
         var defaultPassword = BCrypt.Net.BCrypt.HashPassword("Password123!");
         
-        var admin = new User { Id = Guid.NewGuid(), Email = "admin@techgear.com", PasswordHash = defaultPassword, Role = UserRole.Admin, DisplayName = "Super Admin" };
-        var seller1 = new User { Id = Guid.NewGuid(), Email = "seller1@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Gear Store VN", AverageRating = 4.8, TotalReviews = 120 };
-        var seller2 = new User { Id = Guid.NewGuid(), Email = "seller2@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Flashlight Pro", AverageRating = 4.5, TotalReviews = 45 };
-        var buyer1 = new User { Id = Guid.NewGuid(), Email = "buyer1@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Nguyễn Văn Mua" };
-        var buyer2 = new User { Id = Guid.NewGuid(), Email = "buyer2@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Trần Thị Bid" };
+        var admin = new User { IsEmailVerified = true, Id = Guid.NewGuid(), Email = "admin@techgear.com", PasswordHash = defaultPassword, Role = UserRole.Admin, DisplayName = "Super Admin" };
+        var seller1 = new User { IsEmailVerified = true, Id = Guid.NewGuid(), Email = "seller1@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Gear Store VN", AverageRating = 4.8, TotalReviews = 120 };
+        var seller2 = new User { IsEmailVerified = true, Id = Guid.NewGuid(), Email = "seller2@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Flashlight Pro", AverageRating = 4.5, TotalReviews = 45 };
+        var buyer1 = new User { IsEmailVerified = true, Id = Guid.NewGuid(), Email = "buyer1@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Nguyễn Văn Mua" };
+        var buyer2 = new User { IsEmailVerified = true, Id = Guid.NewGuid(), Email = "buyer2@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Trần Thị Bid" };
+        var cheater = new User { IsEmailVerified = true, Id = Guid.NewGuid(), Email = "cheater@techgear.com", PasswordHash = defaultPassword, Role = UserRole.User, DisplayName = "Scammer" };
 
-        await context.Users.AddRangeAsync(admin, seller1, seller2, buyer1, buyer2);
+        await context.Users.AddRangeAsync(admin, seller1, seller2, buyer1, buyer2, cheater);
 
         // 3. Seed Categories
-        var catEDC = new Category { Id = Guid.NewGuid(), Name = "Đồ chơi EDC", Description = "Everyday Carry tools" };
-        var catFlashlight = new Category { Id = Guid.NewGuid(), Name = "Đèn pin siêu sáng", Description = "Đèn pin các loại" };
-        var catBackpack = new Category { Id = Guid.NewGuid(), Name = "Balo & Túi", Description = "Balo dã ngoại, túi chiến thuật" };
+        var catEDC = new Category { Id = Guid.Parse("d3b07384-d9a7-4b7b-b35f-155e99859f51"), Name = "Đồ chơi EDC", Description = "Everyday Carry tools" };
+        var catFlashlight = new Category { Id = Guid.Parse("d3b07384-d9a7-4b7b-b35f-155e99859f52"), Name = "Đèn pin siêu sáng", Description = "Đèn pin các loại" };
+        var catBackpack = new Category { Id = Guid.Parse("d3b07384-d9a7-4b7b-b35f-155e99859f53"), Name = "Balo & Túi", Description = "Balo dã ngoại, túi chiến thuật" };
 
         await context.Categories.AddRangeAsync(catEDC, catFlashlight, catBackpack);
 
@@ -127,7 +128,7 @@ public static class DataSeeder
         {
             Id = Guid.NewGuid(),
             ReporterId = buyer1.Id,
-            ReportedUserId = seller1.Id,
+            ReportedUserId = cheater.Id,
             AuctionId = auction3.Id,
             ChatRoomId = chatRoom.Id,
             Type = ReportType.Scam,

@@ -1,6 +1,6 @@
 namespace TechGearAuction.Application.DTOs.User;
 
-public class PublicProfileDto
+public record PublicProfileDto
 {
     public Guid Id { get; set; }
     public string? DisplayName { get; set; }
@@ -19,4 +19,5 @@ public class PublicProfileDto
 
     public List<SocialLinkDto> SocialLinks { get; set; } = new List<SocialLinkDto>();
 }
+
 

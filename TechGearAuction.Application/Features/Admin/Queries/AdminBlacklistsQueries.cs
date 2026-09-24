@@ -29,9 +29,9 @@ public class GetBlacklistsQueryHandler : IRequestHandler<GetBlacklistsQuery, Pag
 
     public async Task<PagedResult<BannedDeviceDto>> Handle(GetBlacklistsQuery request, CancellationToken cancellationToken)
     {
-        var total = await _context.BannedDevices.CountAsync(cancellationToken);
+        var total = await _context.BannedDevices.AsNoTracking().CountAsync(cancellationToken);
 
-        var devices = await _context.BannedDevices
+        var devices = await _context.BannedDevices.AsNoTracking()
             .OrderByDescending(d => d.BannedAt)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)

@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.User;
@@ -33,7 +34,7 @@ public class UpdateUserByAdminCommandHandler : IRequestHandler<UpdateUserByAdmin
         
         if (targetUser == null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         targetUser.DisplayName = request.DisplayName;

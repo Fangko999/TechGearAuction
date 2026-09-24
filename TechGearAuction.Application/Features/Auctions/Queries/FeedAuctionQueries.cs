@@ -29,12 +29,12 @@ public class GetFeedAuctionsQueryHandler : IRequestHandler<GetFeedAuctionsQuery,
         var currentUserId = _currentUserService.UserId;
         if (currentUserId == Guid.Empty) throw new UnauthorizedAccessException();
 
-        var followedSellerIds = await _context.UserFollows
+        var followedSellerIds = await _context.UserFollows.AsNoTracking()
             .Where(f => f.FollowerId == currentUserId)
             .Select(f => f.FolloweeId)
             .ToListAsync(cancellationToken);
 
-        var query = _context.Auctions
+        var query = _context.Auctions.AsNoTracking()
             .Include(a => a.Category)
             .Include(a => a.Seller)
             .Include(a => a.Images)
@@ -49,7 +49,7 @@ public class GetFeedAuctionsQueryHandler : IRequestHandler<GetFeedAuctionsQuery,
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var userWatchlists = await _context.AuctionWatches
+        var userWatchlists = await _context.AuctionWatches.AsNoTracking()
             .Where(w => w.UserId == currentUserId)
             .Select(w => w.AuctionId)
             .ToListAsync(cancellationToken);
@@ -103,7 +103,7 @@ public class GetWatchlistEndingSoonQueryHandler : IRequestHandler<GetWatchlistEn
         var now = DateTime.UtcNow;
         var next24h = now.AddHours(24);
 
-        var watchlists = await _context.AuctionWatches
+        var watchlists = await _context.AuctionWatches.AsNoTracking()
             .Include(w => w.Auction)
                 .ThenInclude(a => a.Category)
             .Include(w => w.Auction)
@@ -114,7 +114,7 @@ public class GetWatchlistEndingSoonQueryHandler : IRequestHandler<GetWatchlistEn
             .OrderBy(w => w.Auction.EndTime)
             .ToListAsync(cancellationToken);
 
-        var followedSellerIds = await _context.UserFollows
+        var followedSellerIds = await _context.UserFollows.AsNoTracking()
             .Where(f => f.FollowerId == currentUserId)
             .Select(f => f.FolloweeId)
             .ToListAsync(cancellationToken);

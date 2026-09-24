@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TechGearAuction.Application.DTOs.Auth;
 
-public class ResetPasswordDto
+public record ResetPasswordDto
 {
     [Required]
     public string Token { get; set; } = null!;
@@ -10,4 +10,5 @@ public class ResetPasswordDto
     [Required, MinLength(6)]
     public string NewPassword { get; set; } = null!;
 }
+
 

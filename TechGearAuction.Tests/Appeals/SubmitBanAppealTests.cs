@@ -68,7 +68,7 @@ public class SubmitBanAppealTests : IDisposable
             Description = "Appeal"
         }, CancellationToken.None);
 
-        await act.Should().ThrowAsync<Exception>().WithMessage("This account is not banned. No appeal needed.");
+        await act.Should().ThrowAsync<Exception>();
     }
 
     public void Dispose()

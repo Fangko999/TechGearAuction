@@ -1,6 +1,6 @@
 namespace TechGearAuction.Application.DTOs.User;
 
-public class UserProfileDto
+public record UserProfileDto
 {
     public Guid Id { get; set; }
     public string Email { get; set; } = null!;
@@ -19,5 +19,6 @@ public class UserProfileDto
     public int SuspiciousSellerCount { get; set; }
     public List<SocialLinkDto> SocialLinks { get; set; } = new List<SocialLinkDto>();
 }
+
 
 

@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -33,7 +34,7 @@ public class PublishAuctionCommandHandler : IRequestHandler<PublishAuctionComman
 
         if (auction == null)
         {
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
         }
 
         if (auction.SellerId != sellerId)
@@ -43,17 +44,17 @@ public class PublishAuctionCommandHandler : IRequestHandler<PublishAuctionComman
 
         if (auction.Status != AuctionStatus.Draft)
         {
-            throw new Exception("Only Draft auctions can be published.");
+            throw new BusinessRuleException("Only Draft auctions can be published.");
         }
 
         if (!auction.Images.Any())
         {
-            throw new Exception("Auction must have at least one image before publishing.");
+            throw new BusinessRuleException("Auction must have at least one image before publishing.");
         }
 
         if (auction.Seller.AvailableCredits < 1)
         {
-            throw new Exception("Not enough credits to publish this auction. Please deposit credits.");
+            throw new BusinessRuleException("Not enough credits to publish this auction. Please deposit credits.");
         }
 
         // Deduct credit

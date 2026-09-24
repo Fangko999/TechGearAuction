@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -35,16 +36,16 @@ public class UploadChatMediaCommandHandler : IRequestHandler<UploadChatMediaComm
             .FirstOrDefaultAsync(r => r.Id == request.ChatRoomId, cancellationToken);
 
         if (chatRoom == null)
-            throw new Exception("Chat room not found.");
+            throw new NotFoundException("Entity", "Chat room not found.");
 
         if (chatRoom.Status != ChatRoomStatus.Active)
-            throw new Exception("This chat room is not active. Media upload is disabled.");
+            throw new BusinessRuleException("This chat room is not active. Media upload is disabled.");
 
         if (chatRoom.Auction.SellerId != userId && chatRoom.Auction.WinnerId != userId)
-            throw new Exception("You are not a participant of this chat room.");
+            throw new BusinessRuleException("You are not a participant of this chat room.");
 
         if (request.FileStream == null || request.FileStream.Length == 0)
-            throw new Exception("File is empty.");
+            throw new BusinessRuleException("File is empty.");
 
         var fileName = $"{Guid.NewGuid()}_{request.FileName}";
         var url = await _storageService.UploadFileAsync(request.FileStream, fileName, request.ContentType, "chat-media");

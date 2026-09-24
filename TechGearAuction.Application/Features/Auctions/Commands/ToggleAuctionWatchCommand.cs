@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -28,12 +29,12 @@ public class ToggleAuctionWatchCommandHandler : IRequestHandler<ToggleAuctionWat
         var auction = await _context.Auctions.FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken);
         if (auction == null)
         {
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
         }
 
         if (auction.SellerId == userId)
         {
-            throw new Exception("You cannot watch your own auction.");
+            throw new BusinessRuleException("You cannot watch your own auction.");
         }
 
         var existingWatch = await _context.AuctionWatches

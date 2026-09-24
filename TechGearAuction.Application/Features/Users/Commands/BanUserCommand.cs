@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -34,7 +35,7 @@ public class BanUserCommandHandler : IRequestHandler<BanUserCommand>
         var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.TargetUserId, cancellationToken);
         if (targetUser == null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         if (targetUser.Status == UserStatus.Banned)

@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TechGearAuction.Application.Common.Exceptions;
+using TechGearAuction.Domain.Exceptions;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Domain.Entities;
 using TechGearAuction.Domain.Enums;
@@ -35,26 +35,26 @@ public class BuyNowCommandHandler : IRequestHandler<BuyNowCommand>
             .FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken);
 
         if (auction == null)
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
 
         if (auction.Status != AuctionStatus.Active)
-            throw new Exception("This auction is not currently active.");
+            throw new BusinessRuleException("This auction is not currently active.");
 
         if (auction.EndTime <= DateTime.UtcNow)
-            throw new Exception("This auction has already ended.");
+            throw new BusinessRuleException("This auction has already ended.");
 
         if (auction.SellerId == bidderId)
-            throw new Exception("You cannot buy your own auction.");
+            throw new BusinessRuleException("You cannot buy your own auction.");
 
         if (!auction.BuyNowPrice.HasValue)
-            throw new Exception("This auction does not have a Buy Now option.");
+            throw new BusinessRuleException("This auction does not have a Buy Now option.");
 
         var isBlocked = await _context.UserBlocks
             .AnyAsync(b => (b.BlockerId == auction.SellerId && b.BlockedId == bidderId) || 
                            (b.BlockerId == bidderId && b.BlockedId == auction.SellerId), cancellationToken);
         if (isBlocked)
         {
-            throw new Exception("You are not allowed to buy this auction.");
+            throw new ForbiddenException("You are not allowed to buy this auction.");
         }
 
         var bidder = await _context.Users.FirstOrDefaultAsync(u => u.Id == bidderId, cancellationToken);
@@ -109,4 +109,5 @@ public class BuyNowCommandHandler : IRequestHandler<BuyNowCommand>
         await _notificationService.NotifyAuctionEndedAsync(auction.Id, bidderName, auction.CurrentPrice);
     }
 }
+
 

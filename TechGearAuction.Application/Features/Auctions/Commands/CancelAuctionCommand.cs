@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -27,7 +28,7 @@ public class CancelAuctionCommandHandler : IRequestHandler<CancelAuctionCommand>
 
         if (auction == null)
         {
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
         }
 
         if (auction.SellerId != _currentUserService.UserId)
@@ -37,11 +38,11 @@ public class CancelAuctionCommandHandler : IRequestHandler<CancelAuctionCommand>
 
         if (auction.Status == AuctionStatus.Active)
         {
-            throw new Exception("Active auctions cannot be cancelled. There may be bidders participating.");
+            throw new BusinessRuleException("Active auctions cannot be cancelled. There may be bidders participating.");
         }
         if (auction.Status != AuctionStatus.Draft && auction.Status != AuctionStatus.Scheduled)
         {
-            throw new Exception("Only draft or scheduled auctions can be cancelled.");
+            throw new BusinessRuleException("Only draft or scheduled auctions can be cancelled.");
         }
 
         var oldStatus = auction.Status;

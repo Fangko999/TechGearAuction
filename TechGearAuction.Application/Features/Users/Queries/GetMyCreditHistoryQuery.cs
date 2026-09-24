@@ -24,7 +24,7 @@ public class GetMyCreditHistoryQueryHandler : IRequestHandler<GetMyCreditHistory
     {
         var userId = _currentUserService.UserId;
 
-        var transactions = await _context.CreditTransactions
+        var transactions = await _context.CreditTransactions.AsNoTracking()
             .Where(t => t.UserId == userId)
             .OrderByDescending(t => t.CreatedAt)
             .Select(t => new CreditTransactionDto

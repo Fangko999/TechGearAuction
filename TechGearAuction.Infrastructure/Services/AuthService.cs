@@ -27,6 +27,11 @@ public class AuthService : IAuthService
             throw new Exception("Email already exists");
         }
 
+        if (dto.Email?.Length > 256)
+        {
+            throw new Exception("Email cannot exceed 256 characters.");
+        }
+
         var verificationToken = Guid.NewGuid().ToString();
 
         var user = new User
@@ -66,22 +71,22 @@ public class AuthService : IAuthService
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-        if (user != null && user.Status == UserStatus.Banned)
-        {
-            var bannedDevice = await _context.BannedDevices.FirstOrDefaultAsync(b => b.DeviceHash == user.LastLoginDeviceHash);
-            var reason = bannedDevice?.Reason ?? "Account has been banned due to policy violations.";
-            throw new TechGearAuction.Application.Common.Exceptions.BannedUserException(reason, user.ViolationCount, true);
-        }
-
         var bannedDeviceCheck = await _context.BannedDevices.FirstOrDefaultAsync(b => b.DeviceHash == deviceHash);
         if (bannedDeviceCheck != null)
         {
-            throw new TechGearAuction.Application.Common.Exceptions.BannedUserException(bannedDeviceCheck.Reason ?? "This device has been banned.", user?.ViolationCount ?? 0, true);
+            throw new TechGearAuction.Domain.Exceptions.BannedUserException(bannedDeviceCheck.Reason ?? "This device has been banned.", user?.ViolationCount ?? 0, true);
         }
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
             throw new Exception("Invalid credentials");
+        }
+
+        if (user.Status == UserStatus.Banned)
+        {
+            var bannedDevice = await _context.BannedDevices.FirstOrDefaultAsync(b => b.DeviceHash == user.LastLoginDeviceHash);
+            var reason = bannedDevice?.Reason ?? "Account has been banned due to policy violations.";
+            throw new TechGearAuction.Domain.Exceptions.BannedUserException(reason, user.ViolationCount, true);
         }
 
         if (!user.IsEmailVerified)
@@ -170,3 +175,4 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
     }
 }
+

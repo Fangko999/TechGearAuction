@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -41,6 +42,10 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
         {
             throw new ArgumentException("End time must be after Start time.");
         }
+        if (request.Title?.Length > 200)
+        {
+            throw new ArgumentException("Title cannot exceed 200 characters.");
+        }
         if ((request.EndTime - request.StartTime).TotalHours < 3)
         {
             throw new ArgumentException("Auction duration must be at least 3 hours.");
@@ -49,7 +54,7 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
         var categoryExists = await _context.Categories.AnyAsync(c => c.Id == request.CategoryId, cancellationToken);
         if (!categoryExists)
         {
-            throw new Exception("Category does not exist.");
+            throw new BusinessRuleException("Category does not exist.");
         }
 
         var auction = new Auction

@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -26,7 +27,7 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
         var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
         if (category == null)
         {
-            throw new Exception("Category not found.");
+            throw new NotFoundException("Entity", "Category not found.");
         }
 
         if (request.ParentId == request.Id)

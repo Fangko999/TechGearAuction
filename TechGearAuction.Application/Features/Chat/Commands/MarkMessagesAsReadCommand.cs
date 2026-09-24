@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -31,10 +32,10 @@ public class MarkMessagesAsReadCommandHandler : IRequestHandler<MarkMessagesAsRe
             .FirstOrDefaultAsync(r => r.Id == request.ChatRoomId, cancellationToken);
 
         if (chatRoom == null)
-            throw new Exception("Chat room not found.");
+            throw new NotFoundException("Entity", "Chat room not found.");
 
         if (chatRoom.Auction.SellerId != userId && chatRoom.Auction.WinnerId != userId)
-            throw new Exception("You are not a participant of this chat room.");
+            throw new BusinessRuleException("You are not a participant of this chat room.");
 
         var unreadMessages = await _context.ChatMessages
             .Where(m => m.ChatRoomId == request.ChatRoomId && m.SenderId != userId && !m.IsRead)

@@ -41,7 +41,7 @@ public class GetSuspiciousActivitiesQueryHandler : IRequestHandler<GetSuspicious
 
     public async Task<PagedResult<SuspiciousActivityDto>> Handle(GetSuspiciousActivitiesQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.SuspiciousActivities
+        var query = _context.SuspiciousActivities.AsNoTracking()
             .Include(a => a.Bidder)
             .Include(a => a.Seller)
             .Include(a => a.Auction)

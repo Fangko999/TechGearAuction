@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -34,7 +35,7 @@ public class UpdateAvatarCommandHandler : IRequestHandler<UpdateAvatarCommand, s
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
         if (user == null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         var extension = Path.GetExtension(request.FileName);

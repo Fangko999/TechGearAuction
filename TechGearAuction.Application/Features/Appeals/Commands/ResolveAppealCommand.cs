@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -31,7 +32,7 @@ public class ResolveAppealCommandHandler : IRequestHandler<ResolveAppealCommand>
             .FirstOrDefaultAsync(a => a.Id == request.AppealId, cancellationToken);
 
         if (appeal == null)
-            throw new Exception("Appeal not found.");
+            throw new NotFoundException("Entity", "Appeal not found.");
 
         appeal.Status = request.Approve ? AppealStatus.Approved : AppealStatus.Rejected;
 

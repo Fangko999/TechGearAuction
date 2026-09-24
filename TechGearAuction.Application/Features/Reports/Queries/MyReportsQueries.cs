@@ -26,7 +26,7 @@ public class GetMyReportsQueryHandler : IRequestHandler<GetMyReportsQuery, Paged
     {
         var currentUserId = _currentUserService.UserId;
 
-        var query = _context.Reports
+        var query = _context.Reports.AsNoTracking()
             .Include(r => r.Reporter)
             .Include(r => r.ReportedUser)
             .Where(r => r.ReporterId == currentUserId)

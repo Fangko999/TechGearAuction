@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -36,13 +37,13 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, Gui
             .FirstOrDefaultAsync(r => r.Id == request.ChatRoomId, cancellationToken);
 
         if (chatRoom == null)
-            throw new Exception("Chat room not found.");
+            throw new NotFoundException("Entity", "Chat room not found.");
 
         if (chatRoom.Status == ChatRoomStatus.Archived)
-            throw new Exception("This chat room is archived. You cannot send new messages.");
+            throw new BusinessRuleException("This chat room is archived. You cannot send new messages.");
 
         if (chatRoom.Auction.SellerId != userId && chatRoom.Auction.WinnerId != userId)
-            throw new Exception("You are not a participant of this chat room.");
+            throw new BusinessRuleException("You are not a participant of this chat room.");
 
         var partnerId = chatRoom.Auction.SellerId == userId ? chatRoom.Auction.WinnerId!.Value : chatRoom.Auction.SellerId;
 
@@ -52,7 +53,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, Gui
                            (b.BlockerId == partnerId && b.BlockedId == userId), cancellationToken);
 
         if (isBlocked)
-            throw new Exception("You cannot send messages to this user because of a block.");
+            throw new BusinessRuleException("You cannot send messages to this user because of a block.");
 
         var msgType = Enum.TryParse<ChatMessageType>(request.MessageType, out var parsedType) ? parsedType : ChatMessageType.Text;
 

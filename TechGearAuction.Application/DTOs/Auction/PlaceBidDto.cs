@@ -1,7 +1,8 @@
 namespace TechGearAuction.Application.DTOs.Auction;
 
-public class PlaceBidDto
+public record PlaceBidDto
 {
     public decimal BidAmount { get; set; }
 }
+
 

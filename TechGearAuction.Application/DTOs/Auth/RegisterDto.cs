@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace TechGearAuction.Application.DTOs.Auth;
 
-public class RegisterDto
+public record RegisterDto
 {
     [Required, EmailAddress]
     public string Email { get; set; } = null!;

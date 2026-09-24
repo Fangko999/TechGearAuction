@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -25,7 +26,7 @@ public class RemoveFromBlacklistCommandHandler : IRequestHandler<RemoveFromBlack
     {
         var device = await _context.BannedDevices.FirstOrDefaultAsync(b => b.DeviceHash == request.DeviceHash, cancellationToken);
         if (device == null)
-            throw new Exception("Device not found in blacklist.");
+            throw new NotFoundException("Entity", "Device not found in blacklist.");
 
         _context.BannedDevices.Remove(device);
 

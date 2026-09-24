@@ -19,7 +19,7 @@ public class CreditTests : IDisposable
         var svc = new MockCurrentUserService(TestDbFactory.UserId);
         var handler = new DepositCreditCommandHandler(ctx, svc);
 
-        await handler.Handle(new DepositCreditCommand { Amount = 10 }, CancellationToken.None);
+        await handler.Handle(new DepositCreditCommand { Amount = 10, PaymentToken = "tok_valid_123" }, CancellationToken.None);
 
         using var verifyCtx = _factory.CreateContext();
         var user = await verifyCtx.Users.FirstAsync(u => u.Id == TestDbFactory.UserId);
@@ -37,7 +37,7 @@ public class CreditTests : IDisposable
         var svc = new MockCurrentUserService(TestDbFactory.UserId);
         var handler = new DepositCreditCommandHandler(ctx, svc);
 
-        var act = () => handler.Handle(new DepositCreditCommand { Amount = 0 }, CancellationToken.None);
+        var act = () => handler.Handle(new DepositCreditCommand { Amount = 0, PaymentToken = "tok_valid_123" }, CancellationToken.None);
         await act.Should().ThrowAsync<ArgumentException>();
     }
 
@@ -48,7 +48,7 @@ public class CreditTests : IDisposable
         var svc = new MockCurrentUserService(TestDbFactory.UserId);
         var handler = new DepositCreditCommandHandler(ctx, svc);
 
-        var act = () => handler.Handle(new DepositCreditCommand { Amount = -5 }, CancellationToken.None);
+        var act = () => handler.Handle(new DepositCreditCommand { Amount = -5, PaymentToken = "tok_valid_123" }, CancellationToken.None);
         await act.Should().ThrowAsync<ArgumentException>();
     }
 
@@ -76,6 +76,17 @@ public class CreditTests : IDisposable
 
         result.Should().HaveCountGreaterThan(1);
         result.First().Reason.Should().Be("Newer Deposit", "most recent transaction should come first");
+    }
+
+    [Fact]
+    public async Task DepositCredit_WithInvalidToken_ShouldThrow()
+    {
+        var ctx = _factory.CreateContext();
+        var svc = new MockCurrentUserService(TestDbFactory.UserId);
+        var handler = new DepositCreditCommandHandler(ctx, svc);
+
+        var act = () => handler.Handle(new DepositCreditCommand { Amount = 10, PaymentToken = "invalid_token" }, CancellationToken.None);
+        await act.Should().ThrowAsync<TechGearAuction.Domain.Exceptions.BusinessRuleException>().WithMessage("*Payment verification failed*");
     }
 
     public void Dispose() => _factory.Dispose();

@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "dotnet-intelligence": {
+      "command": "dotnet-mcp",
+      "args": []
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "next-devtools-mcp@latest",
+        "--dir",
+        "./frontend"
+      ]
+    }
+  }
+}

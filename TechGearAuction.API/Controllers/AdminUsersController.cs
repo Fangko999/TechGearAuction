@@ -21,29 +21,15 @@ public class AdminUsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
     {
-        try
-        {
             var result = await _mediator.Send(query);
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
-        try
-        {
             var result = await _mediator.Send(new GetUserByIdQuery { Id = id });
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}")]
@@ -54,51 +40,22 @@ public class AdminUsersController : ControllerBase
             return BadRequest(new { Message = "ID mismatch." });
         }
 
-        try
-        {
             await _mediator.Send(command);
             return Ok(new { Message = "User profile updated successfully by Admin." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/close")]
     public async Task<IActionResult> CloseAccount(Guid id)
     {
-        try
-        {
             await _mediator.Send(new CloseUserAccountCommand { TargetUserId = id });
             return Ok(new { Message = "User account closed successfully." });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/restore")]
     public async Task<IActionResult> RestoreAccount(Guid id)
     {
-        try
-        {
             await _mediator.Send(new RestoreUserAccountCommand { TargetUserId = id });
             return Ok(new { Message = "User account restored successfully." });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/ban")]
@@ -109,19 +66,8 @@ public class AdminUsersController : ControllerBase
             return BadRequest(new { Message = "ID mismatch." });
         }
 
-        try
-        {
             await _mediator.Send(command);
             return Ok(new { Message = "User banned successfully." });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/unban")]
@@ -132,19 +78,8 @@ public class AdminUsersController : ControllerBase
             return BadRequest(new { Message = "ID mismatch." });
         }
 
-        try
-        {
             await _mediator.Send(command);
             return Ok(new { Message = "User unbanned successfully." });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }
 

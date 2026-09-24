@@ -28,7 +28,7 @@ public class GetMyAuctionsQueryHandler : IRequestHandler<GetMyAuctionsQuery, Pag
 
     public async Task<PagedResult<AuctionDto>> Handle(GetMyAuctionsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Auctions
+        var query = _context.Auctions.AsNoTracking()
             .Include(a => a.Category)
             .Include(a => a.Images)
             .Include(a => a.Seller)

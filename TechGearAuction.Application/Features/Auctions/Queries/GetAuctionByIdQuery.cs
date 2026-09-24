@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.Auction;
@@ -21,7 +22,7 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, A
 
     public async Task<AuctionDetailDto> Handle(GetAuctionByIdQuery request, CancellationToken cancellationToken)
     {
-        var auction = await _context.Auctions
+        var auction = await _context.Auctions.AsNoTracking()
             .Include(a => a.Category)
             .Include(a => a.Images)
             .Include(a => a.Seller)
@@ -29,7 +30,7 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, A
 
         if (auction == null)
         {
-            throw new Exception("Auction not found.");
+            throw new NotFoundException("Entity", "Auction not found.");
         }
 
         return new AuctionDetailDto

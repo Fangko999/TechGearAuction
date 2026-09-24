@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.User;
@@ -23,13 +24,13 @@ public class GetPublicProfileQueryHandler : IRequestHandler<GetPublicProfileQuer
     public async Task<PublicProfileDto> Handle(GetPublicProfileQuery request, CancellationToken cancellationToken)
     {
         // By default, the global query filter will hide deleted (Closed) users.
-        var user = await _context.Users
+        var user = await _context.Users.AsNoTracking()
             .Include(u => u.SocialLinks)
             .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 
         if (user == null || user.Status == UserStatus.Closed)
         {
-            throw new Exception("User not found or account is closed.");
+            throw new NotFoundException("Entity", "User not found or account is closed.");
         }
 
         return new PublicProfileDto

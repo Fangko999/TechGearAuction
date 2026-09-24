@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using TechGearAuction.Application.Common.Exceptions;
+using TechGearAuction.Domain.Exceptions;
 using TechGearAuction.Application.Features.Auctions.Commands;
 using TechGearAuction.Application.Interfaces;
 using TechGearAuction.Domain.Enums;
@@ -297,6 +297,32 @@ public class PlaceBidTests : IDisposable
         }, CancellationToken.None);
 
         await act.Should().ThrowAsync<ConcurrencyException>().WithMessage("*exact same time*");
+    }
+
+    [Fact]
+    public async Task PlaceBid_WhenBidderIsBanned_ShouldThrow()
+    {
+        // Ban User2
+        using (var setupCtx = _factory.CreateContext())
+        {
+            var user = await setupCtx.Users.FindAsync(TestDbFactory.User2Id);
+            user!.Status = UserStatus.Banned;
+            await setupCtx.SaveChangesAsync();
+        }
+
+        var svc = new MockCurrentUserService(TestDbFactory.User2Id);
+        var ctx = _factory.CreateContext();
+        var handler = new PlaceBidCommandHandler(ctx, svc, _notificationMock.Object);
+
+        var act = () => handler.Handle(new PlaceBidCommand
+        {
+            AuctionId = TestDbFactory.ActiveAuctionId,
+            BidAmount = 1500,
+            IpAddress = "127.0.0.1",
+            DeviceHash = "abc"
+        }, CancellationToken.None);
+
+        await act.Should().ThrowAsync<Exception>().WithMessage("*account has been banned*");
     }
 
     public void Dispose() => _factory.Dispose();

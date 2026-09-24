@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -35,10 +36,10 @@ public class SubmitBanAppealCommandHandler : IRequestHandler<SubmitBanAppealComm
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
         if (user == null)
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
 
         if (user.Status != UserStatus.Banned)
-            throw new Exception("This account is not banned. No appeal needed.");
+            throw new BannedUserException("This account is not banned. No appeal needed.", 0);
 
         var appeal = new Appeal
         {

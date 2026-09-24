@@ -35,7 +35,7 @@ public class GetAuditLogsQueryHandler : IRequestHandler<GetAuditLogsQuery, Paged
 
     public async Task<PagedResult<AdminAuditLogDto>> Handle(GetAuditLogsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.AdminAuditLogs
+        var query = _context.AdminAuditLogs.AsNoTracking()
             .Include(l => l.Admin)
             .AsQueryable();
 

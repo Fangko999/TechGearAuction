@@ -22,22 +22,13 @@ public class ChatController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetMyChatRooms([FromQuery] string role = "All", [FromQuery] string folder = "Inbox")
     {
-        try
-        {
             var result = await _mediator.Send(new GetMyChatRoomsQuery { Role = role, Folder = folder });
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpGet("{roomId}/messages")]
     public async Task<IActionResult> GetMessages(Guid roomId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
     {
-        try
-        {
             var result = await _mediator.Send(new GetChatRoomMessagesQuery 
             { 
                 ChatRoomId = roomId, 
@@ -45,18 +36,11 @@ public class ChatController : ControllerBase
                 PageSize = pageSize 
             });
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPost("{roomId}/messages")]
     public async Task<IActionResult> SendMessage(Guid roomId, [FromBody] SendMessageDto dto)
     {
-        try
-        {
             var result = await _mediator.Send(new SendMessageCommand 
             { 
                 ChatRoomId = roomId, 
@@ -65,46 +49,25 @@ public class ChatController : ControllerBase
                 MediaUrl = dto.MediaUrl
             });
             return Ok(new { MessageId = result });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{roomId}/messages/read")]
     public async Task<IActionResult> MarkAsRead(Guid roomId)
     {
-        try
-        {
             await _mediator.Send(new MarkMessagesAsReadCommand { ChatRoomId = roomId });
             return Ok(new { Message = "Messages marked as read." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{roomId}/archive")]
     public async Task<IActionResult> ArchiveChatRoom(Guid roomId)
     {
-        try
-        {
             await _mediator.Send(new ArchiveChatRoomCommand { ChatRoomId = roomId });
             return Ok(new { Message = "Chat room archived successfully." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPost("{roomId}/media")]
     public async Task<IActionResult> UploadMedia(Guid roomId, IFormFile file)
     {
-        try
-        {
             if (file == null || file.Length == 0)
                 return BadRequest(new { Message = "File is missing." });
 
@@ -117,10 +80,5 @@ public class ChatController : ControllerBase
                 ContentType = file.ContentType
             });
             return Ok(new { Url = url });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }

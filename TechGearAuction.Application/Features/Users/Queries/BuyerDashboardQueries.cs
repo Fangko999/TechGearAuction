@@ -35,7 +35,7 @@ public class GetMyActiveBidsQueryHandler : IRequestHandler<GetMyActiveBidsQuery,
     {
         var currentUserId = _currentUserService.UserId;
 
-        var activeAuctions = await _context.Auctions
+        var activeAuctions = await _context.Auctions.AsNoTracking()
             .Include(a => a.Images)
             .Include(a => a.Bids)
             .Where(a => a.Status == AuctionStatus.Active && a.Bids.Any(b => b.BidderId == currentUserId && !b.IsCanceled))
@@ -84,7 +84,7 @@ public class GetMyWonAuctionsQueryHandler : IRequestHandler<GetMyWonAuctionsQuer
     {
         var currentUserId = _currentUserService.UserId;
 
-        var query = _context.Auctions
+        var query = _context.Auctions.AsNoTracking()
             .Include(a => a.Category)
             .Include(a => a.Seller)
             .Include(a => a.Images)

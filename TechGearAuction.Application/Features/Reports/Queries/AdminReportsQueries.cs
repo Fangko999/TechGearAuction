@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Common.Models;
@@ -40,7 +41,7 @@ public class GetReportsQueryHandler : IRequestHandler<GetReportsQuery, PagedResu
 
     public async Task<PagedResult<ReportDto>> Handle(GetReportsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Reports
+        var query = _context.Reports.AsNoTracking()
             .Include(r => r.Reporter)
             .Include(r => r.ReportedUser)
             .AsQueryable();
@@ -99,14 +100,14 @@ public class GetReportByIdQueryHandler : IRequestHandler<GetReportByIdQuery, Rep
 
     public async Task<ReportDto> Handle(GetReportByIdQuery request, CancellationToken cancellationToken)
     {
-        var report = await _context.Reports
+        var report = await _context.Reports.AsNoTracking()
             .Include(r => r.Reporter)
             .Include(r => r.ReportedUser)
             .Include(r => r.Evidences)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (report == null)
-            throw new Exception("Report not found.");
+            throw new NotFoundException("Entity", "Report not found.");
 
         return new ReportDto
         {

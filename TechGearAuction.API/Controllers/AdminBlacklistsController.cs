@@ -28,15 +28,8 @@ public class AdminBlacklistsController : ControllerBase
     [HttpDelete("{hash}")]
     public async Task<IActionResult> RemoveFromBlacklist(string hash)
     {
-        try
-        {
             await _mediator.Send(new RemoveFromBlacklistCommand { DeviceHash = hash });
             return Ok(new { Message = "Device removed from blacklist successfully." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }
 

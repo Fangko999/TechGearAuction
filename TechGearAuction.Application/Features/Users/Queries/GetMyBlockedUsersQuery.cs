@@ -27,7 +27,7 @@ public class GetMyBlockedUsersQueryHandler : IRequestHandler<GetMyBlockedUsersQu
     {
         var blockerId = _currentUserService.UserId;
 
-        var query = _context.UserBlocks
+        var query = _context.UserBlocks.AsNoTracking()
             .Where(b => b.BlockerId == blockerId)
             .Include(b => b.Blocked)
                 .ThenInclude(u => u.SocialLinks)

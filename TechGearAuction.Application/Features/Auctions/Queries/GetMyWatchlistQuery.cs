@@ -27,7 +27,7 @@ public class GetMyWatchlistQueryHandler : IRequestHandler<GetMyWatchlistQuery, P
     {
         var userId = _currentUserService.UserId;
 
-        var query = _context.AuctionWatches
+        var query = _context.AuctionWatches.AsNoTracking()
             .Where(w => w.UserId == userId)
             .Include(w => w.Auction)
                 .ThenInclude(a => a.Category)

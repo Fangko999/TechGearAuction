@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using TechGearAuction.Application.Common.Models;
@@ -86,7 +86,8 @@ public class MinioStorageService : IStorageService
         await _minioClient.PutObjectAsync(putObjectArgs);
 
         var protocol = _settings.UseSSL ? "https" : "http";
-        return $"{protocol}://{_settings.Endpoint}/{bucketName}/{fileName}";
+        var publicEndpoint = Environment.GetEnvironmentVariable("MINIO_PUBLIC_ENDPOINT") ?? _settings.Endpoint;
+        return $"{protocol}://{publicEndpoint}/{bucketName}/{fileName}";
     }
 }
 

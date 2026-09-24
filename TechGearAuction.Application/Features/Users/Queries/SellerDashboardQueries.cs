@@ -30,16 +30,16 @@ public class GetSellerMetricsOverviewQueryHandler : IRequestHandler<GetSellerMet
         var currentUserId = _currentUserService.UserId;
         var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        var monthlyRevenue = await _context.Auctions
+        var monthlyRevenue = await _context.Auctions.AsNoTracking()
             .Where(a => a.SellerId == currentUserId && a.Status == AuctionStatus.Completed && a.UpdatedAt >= startOfMonth)
             .SumAsync(a => a.CurrentPrice, cancellationToken);
 
         // Pending orders can be defined as completed auctions that haven't been shipped/delivered, but we don't have order tracking yet.
         // We'll count completed auctions won by someone in the last 7 days as an approximation.
-        var pendingOrders = await _context.Auctions
+        var pendingOrders = await _context.Auctions.AsNoTracking()
             .CountAsync(a => a.SellerId == currentUserId && a.Status == AuctionStatus.Completed && a.WinnerId != null && a.UpdatedAt >= DateTime.UtcNow.AddDays(-7), cancellationToken);
 
-        var followersCount = await _context.UserFollows
+        var followersCount = await _context.UserFollows.AsNoTracking()
             .CountAsync(f => f.FolloweeId == currentUserId, cancellationToken);
 
         return new SellerMetricsOverviewDto

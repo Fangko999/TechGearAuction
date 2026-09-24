@@ -178,12 +178,19 @@ public class AdminUserTests : IDisposable
     }
 
     [Fact]
-    public async Task UnbanUser_ShouldSetStatusActive()
+    public async Task UnbanUser_ShouldSetStatusActiveAndRemoveDeviceFromBlacklist()
     {
         using (var setupCtx = _factory.CreateContext())
         {
             var u = await setupCtx.Users.IgnoreQueryFilters().FirstAsync(x => x.Id == TestDbFactory.UserId);
             u.Status = UserStatus.Banned;
+            u.LastLoginDeviceHash = "BannedHash123";
+            
+            setupCtx.BannedDevices.Add(new TechGearAuction.Domain.Entities.BannedDevice
+            {
+                DeviceHash = "BannedHash123",
+                Reason = "Banned with user"
+            });
             await setupCtx.SaveChangesAsync();
         }
 
@@ -191,11 +198,14 @@ public class AdminUserTests : IDisposable
         var ctx = _factory.CreateContext();
         var handler = new UnbanUserCommandHandler(ctx, adminSvc);
 
-        await handler.Handle(new UnbanUserCommand { TargetUserId = TestDbFactory.UserId }, CancellationToken.None);
+        await handler.Handle(new UnbanUserCommand { TargetUserId = TestDbFactory.UserId, Reason = "Forgiven" }, CancellationToken.None);
 
         using var verifyCtx = _factory.CreateContext();
         var unbanned = await verifyCtx.Users.IgnoreQueryFilters().FirstAsync(u => u.Id == TestDbFactory.UserId);
         unbanned.Status.Should().Be(UserStatus.Active);
+        
+        var deviceStillBanned = await verifyCtx.BannedDevices.AnyAsync(d => d.DeviceHash == "BannedHash123");
+        deviceStillBanned.Should().BeFalse("device should be removed from blacklist upon unban");
     }
 
     public void Dispose() => _factory.Dispose();

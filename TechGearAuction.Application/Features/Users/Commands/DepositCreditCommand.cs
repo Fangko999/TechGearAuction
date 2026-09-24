@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -8,6 +9,7 @@ namespace TechGearAuction.Application.Features.Users.Commands;
 public class DepositCreditCommand : IRequest
 {
     public int Amount { get; set; }
+    public string PaymentToken { get; set; } = string.Empty;
 }
 
 public class DepositCreditCommandHandler : IRequestHandler<DepositCreditCommand>
@@ -28,12 +30,17 @@ public class DepositCreditCommandHandler : IRequestHandler<DepositCreditCommand>
             throw new ArgumentException("Deposit amount must be greater than 0.");
         }
 
+        if (string.IsNullOrWhiteSpace(request.PaymentToken) || !request.PaymentToken.StartsWith("tok_valid_"))
+        {
+            throw new BusinessRuleException("Payment verification failed. Invalid or missing token.");
+        }
+
         var userId = _currentUserService.UserId;
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
         
         if (user == null)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         // Add credits

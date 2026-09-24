@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.DTOs.Chat;
@@ -26,16 +27,16 @@ public class GetAdminReportChatHistoryQueryHandler : IRequestHandler<GetAdminRep
     {
         var adminId = _currentUserService.UserId;
 
-        var report = await _context.Reports
+        var report = await _context.Reports.AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == request.ReportId, cancellationToken);
 
         if (report == null)
-            throw new Exception("Report not found.");
+            throw new NotFoundException("Entity", "Report not found.");
 
         if (report.ChatRoomId == null)
-            throw new Exception("This report is not linked to any chat room.");
+            throw new BusinessRuleException("This report is not linked to any chat room.");
 
-        var messages = await _context.ChatMessages
+        var messages = await _context.ChatMessages.AsNoTracking()
             .Include(m => m.Sender)
             .Where(m => m.ChatRoomId == report.ChatRoomId.Value)
             .OrderBy(m => m.CreatedAt)

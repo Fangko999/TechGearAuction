@@ -21,19 +21,8 @@ public class AuctionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionCommand command)
     {
-        try
-        {
             var id = await _mediator.Send(command);
             return Ok(new { Message = "Auction created as draft successfully.", Id = id });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPost("{id}/images")]
@@ -56,8 +45,6 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { Message = "Invalid file format. Only JPG, PNG, and WebP are allowed." });
         }
 
-        try
-        {
             using var stream = file.OpenReadStream();
             var command = new UploadAuctionImageCommand
             {
@@ -69,78 +56,37 @@ public class AuctionsController : ControllerBase
             
             var url = await _mediator.Send(command);
             return Ok(new { Message = "Image uploaded successfully.", ImageUrl = url });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Forbid(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/publish")]
     public async Task<IActionResult> PublishAuction(Guid id)
     {
-        try
-        {
             await _mediator.Send(new PublishAuctionCommand { AuctionId = id });
             return Ok(new { Message = "Auction published successfully. 1 credit was deducted." });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Forbid(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetAuctions([FromQuery] GetAuctionsQuery query)
     {
-        try
-        {
             var result = await _mediator.Send(query);
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetAuctionById(Guid id)
     {
-        try
-        {
             var result = await _mediator.Send(new GetAuctionByIdQuery { Id = id });
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(new { Message = ex.Message });
-        }
     }
 
     [HttpPost("{id}/watch")]
     public async Task<IActionResult> ToggleWatch(Guid id)
     {
-        try
-        {
             var isWatched = await _mediator.Send(new ToggleAuctionWatchCommand { AuctionId = id });
             var status = isWatched ? "added to" : "removed from";
             return Ok(new { Message = $"Auction {status} watchlist successfully.", IsWatched = isWatched });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}")]
@@ -151,37 +97,15 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { Message = "ID mismatch." });
         }
 
-        try
-        {
             await _mediator.Send(command);
             return Ok(new { Message = "Auction updated successfully." });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Forbid(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> CancelAuction(Guid id)
     {
-        try
-        {
             await _mediator.Send(new CancelAuctionCommand { Id = id });
             return Ok(new { Message = "Auction cancelled successfully." });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Forbid(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpGet("trending")]
@@ -212,36 +136,20 @@ public class AuctionsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetFeedAuctions([FromQuery] GetFeedAuctionsQuery query)
     {
-        try
-        {
             var result = await _mediator.Send(query);
             return Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Forbid(ex.Message);
-        }
     }
 
     [HttpGet("me")]
     public async Task<IActionResult> GetMyAuctions([FromQuery] GetMyAuctionsQuery query)
     {
-        try
-        {
             var result = await _mediator.Send(query);
             return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPost("{id}/bids")]
     public async Task<IActionResult> PlaceBid(Guid id, [FromBody] TechGearAuction.Application.DTOs.Auction.PlaceBidDto dto)
     {
-        try
-        {
             var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
                 ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
                 ?? "Unknown";
@@ -259,27 +167,12 @@ public class AuctionsController : ControllerBase
 
             await _mediator.Send(command);
             return Ok(new { Message = "Bid placed successfully." });
-        }
-        catch (TechGearAuction.Application.Common.Exceptions.ConcurrencyException ex)
-        {
-            return StatusCode(409, new { Message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPost("{id}/buy-now")]
     [Authorize]
     public async Task<IActionResult> BuyNow(Guid id)
     {
-        try
-        {
             var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
                 ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
                 ?? "Unknown";
@@ -296,19 +189,6 @@ public class AuctionsController : ControllerBase
 
             await _mediator.Send(command);
             return Ok(new { Message = "Buy Now successful." });
-        }
-        catch (TechGearAuction.Application.Common.Exceptions.ConcurrencyException ex)
-        {
-            return StatusCode(409, new { Message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }
 

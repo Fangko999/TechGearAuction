@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -40,7 +41,7 @@ public class ResolveReportCommandHandler : IRequestHandler<ResolveReportCommand>
             .FirstOrDefaultAsync(r => r.Id == request.ReportId, cancellationToken);
 
         if (report == null)
-            throw new Exception("Report not found.");
+            throw new NotFoundException("Entity", "Report not found.");
 
         var reportedUser = report.ReportedUser;
 

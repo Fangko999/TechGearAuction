@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -23,7 +24,7 @@ public class ReviewSuspiciousActivityCommandHandler : IRequestHandler<ReviewSusp
         var activity = await _context.SuspiciousActivities.FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
         
         if (activity == null)
-            throw new Exception("Suspicious activity not found.");
+            throw new NotFoundException("Entity", "Suspicious activity not found.");
 
         activity.IsReviewed = true;
 

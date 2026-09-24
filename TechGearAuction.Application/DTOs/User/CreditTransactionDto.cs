@@ -1,6 +1,6 @@
 namespace TechGearAuction.Application.DTOs.User;
 
-public class CreditTransactionDto
+public record CreditTransactionDto
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -9,4 +9,5 @@ public class CreditTransactionDto
     public Guid? AuctionId { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
 

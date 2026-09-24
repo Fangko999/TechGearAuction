@@ -23,7 +23,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PagedResult<U
 
     public async Task<PagedResult<UserProfileDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Users
+        var query = _context.Users.AsNoTracking()
             .IgnoreQueryFilters()
             .Include(u => u.SocialLinks)
             .OrderByDescending(u => u.CreatedAt);

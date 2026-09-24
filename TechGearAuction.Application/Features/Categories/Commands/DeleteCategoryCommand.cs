@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -27,17 +28,17 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
             
         if (category == null)
         {
-            throw new Exception("Category not found.");
+            throw new NotFoundException("Entity", "Category not found.");
         }
 
         if (category.SubCategories.Any())
         {
-            throw new Exception("Cannot delete category because it has sub-categories. Please reassign them first.");
+            throw new BusinessRuleException("Cannot delete category because it has sub-categories. Please reassign them first.");
         }
 
         if (category.Auctions.Any())
         {
-            throw new Exception("Cannot delete category because it has associated auctions. Please reassign them first.");
+            throw new BusinessRuleException("Cannot delete category because it has associated auctions. Please reassign them first.");
         }
 
         _context.Categories.Remove(category);

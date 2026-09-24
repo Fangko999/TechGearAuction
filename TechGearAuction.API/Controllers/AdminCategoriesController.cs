@@ -20,15 +20,8 @@ public class AdminCategoriesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
     {
-        try
-        {
             var id = await _mediator.Send(command);
             return Ok(new { Message = "Category created successfully.", Id = id });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpPut("{id}")]
@@ -39,29 +32,15 @@ public class AdminCategoriesController : ControllerBase
             return BadRequest(new { Message = "ID mismatch." });
         }
 
-        try
-        {
             await _mediator.Send(command);
             return Ok(new { Message = "Category updated successfully." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {
-        try
-        {
             await _mediator.Send(new DeleteCategoryCommand { Id = id });
             return Ok(new { Message = "Category deleted successfully." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
     }
 }
 

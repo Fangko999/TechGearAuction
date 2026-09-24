@@ -1,3 +1,4 @@
+using TechGearAuction.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TechGearAuction.Application.Interfaces;
@@ -35,7 +36,7 @@ public class ToggleUserBlockCommandHandler : IRequestHandler<ToggleUserBlockComm
         var blockedUserExists = await _context.Users.AnyAsync(u => u.Id == request.BlockedId, cancellationToken);
         if (!blockedUserExists)
         {
-            throw new Exception("User not found.");
+            throw new NotFoundException("Entity", "User not found.");
         }
 
         var existingBlock = await _context.UserBlocks

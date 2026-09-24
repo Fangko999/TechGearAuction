@@ -30,7 +30,7 @@ public class GetMyChatRoomsQueryHandler : IRequestHandler<GetMyChatRoomsQuery, L
         var roleEnum = Enum.TryParse<ChatRoomRole>(request.Role, true, out var rEnum) ? rEnum : ChatRoomRole.All;
         var folderEnum = Enum.TryParse<ChatRoomFolder>(request.Folder, true, out var fEnum) ? fEnum : ChatRoomFolder.Inbox;
 
-        var query = _context.ChatRooms
+        var query = _context.ChatRooms.AsNoTracking()
             .Include(r => r.Auction)
                 .ThenInclude(a => a.Seller)
             .Include(r => r.Auction)

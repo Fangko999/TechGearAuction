@@ -36,7 +36,7 @@ public class GetAppealsQueryHandler : IRequestHandler<GetAppealsQuery, PagedResu
 
     public async Task<PagedResult<AppealDto>> Handle(GetAppealsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Appeals
+        var query = _context.Appeals.AsNoTracking()
             .Include(a => a.User)
             .Include(a => a.Evidences)
             .AsQueryable();

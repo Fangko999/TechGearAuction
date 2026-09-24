@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using TechGearAuction.Domain.Exceptions;
 
 namespace TechGearAuction.API.Middlewares;
 
@@ -36,7 +37,19 @@ public class GlobalExceptionMiddleware
 
         switch (exception)
         {
-            case ArgumentException or ArgumentNullException:
+            case NotFoundException or KeyNotFoundException:
+                statusCode = HttpStatusCode.NotFound;
+                message = exception.Message;
+                break;
+            case ValidationException:
+                statusCode = HttpStatusCode.BadRequest;
+                message = exception.Message;
+                break;
+            case ForbiddenException or BannedUserException:
+                statusCode = HttpStatusCode.Forbidden;
+                message = exception.Message;
+                break;
+            case BusinessRuleException or ArgumentException or ArgumentNullException:
                 statusCode = HttpStatusCode.BadRequest;
                 message = exception.Message;
                 break;
@@ -44,14 +57,11 @@ public class GlobalExceptionMiddleware
                 statusCode = HttpStatusCode.Unauthorized;
                 message = exception.Message;
                 break;
-            case KeyNotFoundException:
-                statusCode = HttpStatusCode.NotFound;
+            case ConcurrencyException:
+                statusCode = HttpStatusCode.Conflict;
                 message = exception.Message;
                 break;
-            // Add other specific domain exceptions here (e.g., BannedUserException)
             default:
-                // For development, we might want to return the actual exception message, but for prod it's better to hide it.
-                // Assuming dev/debug environment based on previous logs, we'll return the message.
                 message = exception.Message; 
                 break;
         }
